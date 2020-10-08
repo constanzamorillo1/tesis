@@ -3,47 +3,48 @@ package com.example.tesis.core
 import com.example.tesis.MainTest
 import kotlin.random.Random
 
-object GeneticAlgorithm {
-    private val population = Population.createPopulation()
+class GeneticAlgorithm(private val population: MutableList<Individual>, private val pxs: Pair<Int, Int>) {
     private val ranking = mutableListOf<Model>()
 
-    fun execute() {
+    fun executeOX() {
 
         val (ind1, ind2) = selection()
-        println("INDIVIDUOS PADRES: ----->")
+        println("INDIVIDUOS PADRES OX: ----->")
         println(ind1.toString())
         println(ind2.toString())
 
         for (i in 0 until 500) {
-            val (px1, px2) = getPXS()
-            //println("PUNTOS DE CORTE: $px1 y $px2")
-
+            val (px1, px2) = pxs
             val (ind1, ind2) = selection()
-            /*println("INDIVIDUOS PADRES: ----->")
-            println(ind1.toString())
-            println(ind2.toString())*/
-
-            val (offStringPMX1, offStringPMX2) = crossoverPMX(ind1, ind2, px1, px2)
-            /*println(offStringPMX1.toString())
-            println(offStringPMX2.toString())*/
-
             val (offStringOX1, offStringOX2) = crossoverOX(ind1, ind2, px1, px2)
-            /*println(offStringOX1.toString())
-            println(offStringOX2.toString())*/
-
-            insertRanking(ind1, ind2, offStringPMX1, offStringPMX2, "PMX")
             insertRanking(ind1, ind2, offStringOX1, offStringOX2, "OX")
             deleteParents()
         }
-
-        /*println("RANKING: ----->")
-        ranking.forEach { ind ->
-            println(ind.toString())
-        }*/
         ranking.sort()
         println()
         println("EL MEJORCITO ES: ${ranking[0].individual} - CROSSOVER: ${ranking[0].crossover}")
+        println()
+    }
 
+    fun executePMX() {
+        val (ind1, ind2) = selection()
+        println("INDIVIDUOS PADRES PMX: ----->")
+        println(ind1.toString())
+        println(ind2.toString())
+
+        for (i in 0 until 5) {
+            val (px1, px2) = pxs
+
+            val (ind1, ind2) = selection()
+
+            val (offStringPMX1, offStringPMX2) = crossoverPMX(ind1, ind2, px1, px2)
+            insertRanking(ind1, ind2, offStringPMX1, offStringPMX2, "PMX")
+            deleteParents()
+        }
+        ranking.sort()
+        println()
+        println("EL MEJORCITO ES: ${ranking[0].individual} - CROSSOVER: ${ranking[0].crossover}")
+        println()
     }
 
     private fun insertRanking(
@@ -136,11 +137,11 @@ object GeneticAlgorithm {
 
         val ind3 = Individual()
         ind3.list = offSpringFirst
-        ind3.distance = Population.calculateDistance(offSpringFirst).toFloat()
+        ind3.distance = Population().calculateDistance(offSpringFirst).toFloat()
 
         val ind4 = Individual()
         ind4.list = offSpringSecond
-        ind4.distance = Population.calculateDistance(offSpringSecond).toFloat()
+        ind4.distance = Population().calculateDistance(offSpringSecond).toFloat()
 
         return Pair(ind3, ind4)
     }
@@ -201,11 +202,11 @@ object GeneticAlgorithm {
 
         val ind3 = Individual()
         ind3.list = offSpringFirst
-        ind3.distance = Population.calculateDistance(offSpringFirst).toFloat()
+        ind3.distance = Population().calculateDistance(offSpringFirst).toFloat()
 
         val ind4 = Individual()
         ind4.list = offSpringSecond
-        ind4.distance = Population.calculateDistance(offSpringSecond).toFloat()
+        ind4.distance = Population().calculateDistance(offSpringSecond).toFloat()
 
         return Pair(ind3, ind4)
     }
@@ -224,24 +225,25 @@ object GeneticAlgorithm {
         }
         return ind
     }
+}
 
-    private fun getPXS(): Pair<Int, Int> {
-        var px1 = Random.nextInt(MainTest.n-1)
-        var px2 = Random.nextInt(MainTest.n-1)
 
-        while (px1 == px2 || px1 == (MainTest.n-1) || px1 == 0
-            || px2 == (MainTest.n-1) || px2 == 0) {
-            px1 = Random.nextInt(MainTest.n-1)
-            px2 = Random.nextInt(MainTest.n-1)
-        }
+fun getPXS(): Pair<Int, Int> {
+    var px1 = Random.nextInt(MainTest.n-1)
+    var px2 = Random.nextInt(MainTest.n-1)
 
-        val extraPx = px1
-        if (px1 > px2) {
-            px1 = px2
-            px2 = extraPx
-        }
-        return Pair(px1, px2)
+    while (px1 == px2 || px1 == (MainTest.n-1) || px1 == 0
+        || px2 == (MainTest.n-1) || px2 == 0) {
+        px1 = Random.nextInt(MainTest.n-1)
+        px2 = Random.nextInt(MainTest.n-1)
     }
+
+    val extraPx = px1
+    if (px1 > px2) {
+        px1 = px2
+        px2 = extraPx
+    }
+    return Pair(px1, px2)
 }
 
 fun List<Int>. print() {

@@ -3,7 +3,7 @@ package com.example.tesis.core
 import com.example.tesis.MainTest
 import kotlin.random.Random
 
-object Population {
+class Population {
     private var list: MutableList<Individual> = mutableListOf()
     private val matrix = createDistanceMatrix()
 
