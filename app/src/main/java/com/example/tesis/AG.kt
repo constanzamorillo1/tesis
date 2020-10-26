@@ -15,7 +15,7 @@ fun main() {
 
         val (px1, px2) = getPXS()
 
-        for (_i in 0 until 6) {
+        for (_i in 0 until 5) {
             val population = Population().createPopulation()
             val populationOX = population.toMutableList()
             val populationPMX =  population.toMutableList()

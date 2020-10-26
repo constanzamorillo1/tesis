@@ -1,6 +1,5 @@
 package com.example.tesis
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -8,14 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_first.*
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
+        setContentView(R.layout.activity_first)
         buttonA.setOnClickListener {
             val intent = Intent().apply {
                 action = Intent.ACTION_VIEW
@@ -49,6 +47,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        if  (hasFocus) {
+            Log.d("WINDOW CHANGED", "ACA ESTOY")
+        }
+
+        super.onWindowFocusChanged(hasFocus)
     }
 
     override fun onPause() {

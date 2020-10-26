@@ -13,7 +13,7 @@ class GeneticAlgorithm(private val population: MutableList<Individual>, private 
         println(ind1.toString())
         println(ind2.toString())
 
-        for (i in 0 until 500) {
+        for (i in 0 until 1000) {
             val (px1, px2) = pxs
             val (ind1, ind2) = selection()
             val (offStringOX1, offStringOX2) = crossoverOX(ind1, ind2, px1, px2)
@@ -32,7 +32,7 @@ class GeneticAlgorithm(private val population: MutableList<Individual>, private 
         println(ind1.toString())
         println(ind2.toString())
 
-        for (i in 0 until 5) {
+        for (i in 0 until 125) {
             val (px1, px2) = pxs
 
             val (ind1, ind2) = selection()
