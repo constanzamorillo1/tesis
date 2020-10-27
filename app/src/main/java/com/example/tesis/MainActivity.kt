@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity() {
         if  (hasFocus) {
             Log.d("WINDOW CHANGED", "ACA ESTOY")
         }
-
         super.onWindowFocusChanged(hasFocus)
     }
 
