@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.example.tesis"
@@ -59,4 +58,7 @@ dependencies {
     //recyclerview
     implementation "androidx.recyclerview:recyclerview:1.1.0"
 
+    //osm para probar
+    implementation 'org.osmdroid:osmdroid-android:6.1.8'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
 }
