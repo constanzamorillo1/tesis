@@ -3,17 +3,19 @@ package com.example.tesis.core
 import com.example.tesis.MainTest
 import kotlin.random.Random
 
-class GeneticAlgorithm(private val population: MutableList<Individual>, private val pxs: Pair<Int, Int>) {
+class GeneticAlgorithm(
+    private val pop: Population,
+    private val population: MutableList<Individual>, private val pxs: Pair<Int, Int>) {
     private val ranking = mutableListOf<Model>()
 
-    fun executeOX() {
+    fun executeOX(): Individual {
 
         val (ind1, ind2) = selection()
         println("INDIVIDUOS PADRES OX: ----->")
         println(ind1.toString())
         println(ind2.toString())
 
-        for (i in 0 until 1000) {
+        for (i in 0 until 6) {
             val (px1, px2) = pxs
             val (ind1, ind2) = selection()
             val (offStringOX1, offStringOX2) = crossoverOX(ind1, ind2, px1, px2)
@@ -24,6 +26,7 @@ class GeneticAlgorithm(private val population: MutableList<Individual>, private 
         println()
         println("EL MEJORCITO ES: ${ranking[0].individual} - CROSSOVER: ${ranking[0].crossover}")
         println()
+        return ranking[0].individual
     }
 
     fun executePMX() {
@@ -32,7 +35,7 @@ class GeneticAlgorithm(private val population: MutableList<Individual>, private 
         println(ind1.toString())
         println(ind2.toString())
 
-        for (i in 0 until 125) {
+        for (i in 0 until 6) {
             val (px1, px2) = pxs
 
             val (ind1, ind2) = selection()
@@ -40,6 +43,7 @@ class GeneticAlgorithm(private val population: MutableList<Individual>, private 
             val (offStringPMX1, offStringPMX2) = crossoverPMX(ind1, ind2, px1, px2)
             insertRanking(ind1, ind2, offStringPMX1, offStringPMX2, "PMX")
             deleteParents()
+            insertChildren(offStringPMX1, offStringPMX2)
         }
         ranking.sort()
         println()
@@ -53,8 +57,8 @@ class GeneticAlgorithm(private val population: MutableList<Individual>, private 
         crossover: String
     ) {
         val backUp = listOf(
-            Model(parent1, "PARENT"),
-            Model(parent2, "PARENT"),
+            /*Model(parent1, "PARENT"),
+            Model(parent2, "PARENT"),*/
             Model(child1, crossover),
             Model(child2, crossover))
 
@@ -137,11 +141,11 @@ class GeneticAlgorithm(private val population: MutableList<Individual>, private 
 
         val ind3 = Individual()
         ind3.list = offSpringFirst
-        ind3.distance = Population().calculateDistance(offSpringFirst).toFloat()
+        ind3.distance = pop.calculateDistance(offSpringFirst)
 
         val ind4 = Individual()
         ind4.list = offSpringSecond
-        ind4.distance = Population().calculateDistance(offSpringSecond).toFloat()
+        ind4.distance = pop.calculateDistance(offSpringSecond)
 
         return Pair(ind3, ind4)
     }
@@ -202,11 +206,11 @@ class GeneticAlgorithm(private val population: MutableList<Individual>, private 
 
         val ind3 = Individual()
         ind3.list = offSpringFirst
-        ind3.distance = Population().calculateDistance(offSpringFirst).toFloat()
+        ind3.distance = pop.calculateDistance(offSpringFirst)
 
         val ind4 = Individual()
         ind4.list = offSpringSecond
-        ind4.distance = Population().calculateDistance(offSpringSecond).toFloat()
+        ind4.distance = pop.calculateDistance(offSpringSecond)
 
         return Pair(ind3, ind4)
     }

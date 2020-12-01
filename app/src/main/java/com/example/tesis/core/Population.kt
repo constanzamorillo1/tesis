@@ -1,11 +1,20 @@
 package com.example.tesis.core
 
+import android.os.StrictMode
 import com.example.tesis.MainTest
+import org.osmdroid.bonuspack.routing.MapQuestRoadManager
+import org.osmdroid.util.GeoPoint
 import kotlin.random.Random
 
-class Population {
+class Population(
+    private val entries: MutableList<GeoPoint> = mutableListOf()
+) {
     private var list: MutableList<Individual> = mutableListOf()
-    private val matrix = createDistanceMatrix()
+    private lateinit var matrix: Array<DoubleArray>
+
+    init {
+        createDistanceMatrix()
+    }
 
     fun createPopulation(): MutableList<Individual> {
         /**
@@ -16,7 +25,9 @@ class Population {
         /**
          * Si n (cantidad de direcciones) es mayor a n entonces 500 sino factorial de n es el top
          */
-        val top: Long = 5000
+        var top: Long = factorial(entries.size) / 2
+        if (top > 500)
+            top = 500
 
         while (list.size < top){
             val i = createIndividual()
@@ -43,33 +54,33 @@ class Population {
 
     private fun createIndividual(): Individual {
         val i = Individual()
-        while (i.list.size < MainTest.n) {
-            val randomA = Random.nextInt(0, MainTest.n)
+        while (i.list.size < entries.size) {
+            val randomA = Random.nextInt(0, entries.size)
             if (!i.list.contains(randomA)) {
                 i.list.add(randomA)
             }
         }
 
-        for (pos in 0 until MainTest.n - 1) {
+        for (pos in 0 until entries.size - 1) {
             val gen = i.list[pos]
             val gen2 = i.list[pos+1]
             i.distance += (matrix[gen][gen2])
         }
 
-        i.distance += (matrix[MainTest.n-1][i.list[0]])
+        i.distance += (matrix[entries.size-1][i.list[0]])
 
         return i
     }
 
-    fun calculateDistance(list: MutableList<Int>): Int {
-        var distance = 0
-        for (pos in 0 until MainTest.n - 1) {
+    fun calculateDistance(list: MutableList<Int>): Double {
+        var distance = 0.0
+        for (pos in 0 until entries.size - 1) {
             val gen = list[pos]
             val gen2 = list[pos+1]
             distance += (matrix[gen][gen2])
         }
 
-        distance += (matrix[MainTest.n-1][list[0]])
+        distance += (matrix[entries.size-1][list[0]])
         return distance
     }
 
@@ -80,36 +91,36 @@ class Population {
         return individualA.list.zip(individualB.list).all { (eltA, eltB) -> eltA == eltB }
     }
 
-    private fun createDistanceMatrix(): Array<IntArray> {
-        val matrix = Array(MainTest.n) {IntArray(MainTest.n)}
-        matrix[0][1] = 500
-        matrix[0][2] = 1600
-        matrix[0][3] = 2500
-        matrix[0][4] = 1800
-        matrix[0][5] = 100
-        matrix[0][6] = 200
-        matrix[0][7] = 300
-        matrix[1][0] = 850
-        matrix[1][2] = 1600
-        matrix[1][3] = 2700
-        matrix[1][4] = 1300
-        matrix[1][5] = 200
-        matrix[1][6] = 300
-        matrix[1][7] = 400
-        matrix[2][0] = 2100
-        matrix[2][1] = 1600
-        matrix[2][3] = 1300
-        matrix[2][4] = 500
-        matrix[2][5] = 300
-        matrix[2][6] = 400
-        matrix[2][7] = 500
-        matrix[3][0] = 1900
-        matrix[3][1] = 1900
-        matrix[3][2] = 1800
-        matrix[3][4] = 1300
-        matrix[3][5] = 400
-        matrix[3][6] = 500
-        matrix[3][7] = 600
+    private fun createDistanceMatrix() {
+        matrix = Array(entries.size) {
+            DoubleArray(entries.size)
+        }
+        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+        val roadManager = MapQuestRoadManager("A3qGuyvHi1WfLxj1KKh51zxDspxAfOAq")
+        roadManager.addRequestOption("routeType=bicycle")
+        roadManager.addRequestOption("timeType=1")
+        entries.forEachIndexed { indexOrigin, geoPointOrigin ->
+            entries.forEachIndexed { indexDestination, geoPointDestination ->
+                if (indexOrigin != indexDestination) {
+                    val distance = roadManager.getRoad(arrayListOf(geoPointOrigin, geoPointDestination)).mLength
+                    matrix[indexOrigin][indexDestination] = distance
+                }
+            }
+        }
+
+        /*matrix[0][1] = 1617
+        matrix[0][2] = 973
+        matrix[0][3] = 1899
+        matrix[1][0] = 1617
+        matrix[1][2] = 1103
+        matrix[1][3] = 1127
+        matrix[2][0] = 973
+        matrix[2][1] = 1103
+        matrix[2][3] = 1389
+        matrix[3][0] = 1899
+        matrix[3][1] = 1127
+        matrix[3][2] = 1389
         matrix[4][0] = 1800
         matrix[4][1] = 1300
         matrix[4][2] = 500
@@ -138,9 +149,7 @@ class Population {
         matrix[7][3] = 1300
         matrix[7][4] = 500
         matrix[7][5] = 300
-        matrix[7][6] = 400
-
-        return matrix
+        matrix[7][6] = 400*/
     }
 
     fun showMatrix() {
