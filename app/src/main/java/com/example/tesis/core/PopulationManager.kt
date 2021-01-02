@@ -1,14 +1,10 @@
 package com.example.tesis.core
 
 import android.os.StrictMode
-import com.example.tesis.MainTest
-import org.osmdroid.bonuspack.routing.MapQuestRoadManager
 import org.osmdroid.util.GeoPoint
 import kotlin.random.Random
 
-class Population(
-    private val entries: MutableList<GeoPoint> = mutableListOf()
-) {
+class PopulationManager(private val entries: MutableList<GeoPoint>) {
     private var list: MutableList<Individual> = mutableListOf()
     private lateinit var matrix: Array<DoubleArray>
 
@@ -72,15 +68,15 @@ class Population(
         return i
     }
 
-    fun calculateDistance(list: MutableList<Int>): Double {
+    fun calculateDistance(individual: Individual): Double {
         var distance = 0.0
         for (pos in 0 until entries.size - 1) {
-            val gen = list[pos]
-            val gen2 = list[pos+1]
+            val gen = individual.list[pos]
+            val gen2 = individual.list[pos+1]
             distance += (matrix[gen][gen2])
         }
 
-        distance += (matrix[entries.size-1][list[0]])
+        distance += (matrix[entries.size-1][individual.list[0]])
         return distance
     }
 
@@ -97,79 +93,15 @@ class Population(
         }
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
-        val roadManager = MapQuestRoadManager("A3qGuyvHi1WfLxj1KKh51zxDspxAfOAq")
-        roadManager.addRequestOption("routeType=bicycle")
-        roadManager.addRequestOption("timeType=1")
         entries.forEachIndexed { indexOrigin, geoPointOrigin ->
             entries.forEachIndexed { indexDestination, geoPointDestination ->
                 if (indexOrigin != indexDestination) {
-                    val distance = roadManager.getRoad(arrayListOf(geoPointOrigin, geoPointDestination)).mLength
+                    val distance = RoadManagerObject.getRoadManager()
+                        .getRoad(arrayListOf(geoPointOrigin, geoPointDestination))
+                        .mLength
                     matrix[indexOrigin][indexDestination] = distance
                 }
             }
-        }
-
-        /*matrix[0][1] = 1617
-        matrix[0][2] = 973
-        matrix[0][3] = 1899
-        matrix[1][0] = 1617
-        matrix[1][2] = 1103
-        matrix[1][3] = 1127
-        matrix[2][0] = 973
-        matrix[2][1] = 1103
-        matrix[2][3] = 1389
-        matrix[3][0] = 1899
-        matrix[3][1] = 1127
-        matrix[3][2] = 1389
-        matrix[4][0] = 1800
-        matrix[4][1] = 1300
-        matrix[4][2] = 500
-        matrix[4][3] = 1300
-        matrix[4][4] = 0
-        matrix[4][5] = 500
-        matrix[4][6] = 600
-        matrix[4][7] = 700
-        matrix[5][0] = 100
-        matrix[5][1] = 500
-        matrix[5][2] = 1600
-        matrix[5][3] = 2500
-        matrix[5][4] = 1800
-        matrix[5][6] = 200
-        matrix[5][7] = 300
-        matrix[6][0] = 850
-        matrix[6][1] = 200
-        matrix[6][2] = 1600
-        matrix[6][3] = 2700
-        matrix[6][4] = 1300
-        matrix[6][5] = 200
-        matrix[6][7] = 400
-        matrix[7][0] = 2100
-        matrix[7][1] = 1600
-        matrix[7][2] = 300
-        matrix[7][3] = 1300
-        matrix[7][4] = 500
-        matrix[7][5] = 300
-        matrix[7][6] = 400*/
-    }
-
-    fun showMatrix() {
-        matrix.forEach {
-            it.forEach {address ->
-                print("| $address |")
-            }
-            println()
-        }
-    }
-
-    fun showPopulation() {
-        list.sort()
-        list.forEach {
-            print("4 ")
-            for (i in it.list) {
-                print("$i ")
-            }
-            print("La distancia es: ${it.distance} metros")
-            println()
         }
     }
 }
