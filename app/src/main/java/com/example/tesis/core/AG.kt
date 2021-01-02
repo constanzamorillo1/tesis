@@ -1,4 +1,4 @@
-package com.example.tesis
+package com.example.tesis.core
 
 import android.util.Log
 import com.example.tesis.core.GeneticAlgorithm
@@ -8,7 +8,7 @@ import org.osmdroid.util.GeoPoint
 import kotlin.system.measureTimeMillis
 
 object MainTest {
-    const val n = 4
+    const val n = 5
 }
 
 fun main(entries: MutableList<GeoPoint>): List<Int> {
@@ -18,14 +18,6 @@ fun main(entries: MutableList<GeoPoint>): List<Int> {
     val time = measureTimeMillis {
 
         val (px1, px2) = getPXS()
-
-        /*for (_i in 0 until 5) {
-            val population = Population().createPopulation()
-            val populationOX = population.toMutableList()
-            val populationPMX =  population.toMutableList()
-            val individual = GeneticAlgorithm(populationOX, Pair(px1, px2)).executeOX()
-            //GeneticAlgorithm(populationPMX, Pair(px1, px2)).executePMX()
-        }*/
         val pop = Population(entries)
         val population = pop.createPopulation()
         val populationOX = population.toMutableList()

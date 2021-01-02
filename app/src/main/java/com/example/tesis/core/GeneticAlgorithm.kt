@@ -1,5 +1,6 @@
 package com.example.tesis.core
 
+import android.util.Log
 import com.example.tesis.MainTest
 import kotlin.random.Random
 
@@ -15,12 +16,19 @@ class GeneticAlgorithm(
         println(ind1.toString())
         println(ind2.toString())
 
-        for (i in 0 until 6) {
+        /**
+         * probar con 25 o 50. Se estan eliminando pero no agregando lso hijos. FIJARSE
+         *
+         */
+        var i = 0
+        while (i < 50 && population.size > 0) {
             val (px1, px2) = pxs
-            val (ind1, ind2) = selection()
+            val (parent1, parent2) = selection()
             val (offStringOX1, offStringOX2) = crossoverOX(ind1, ind2, px1, px2)
-            insertRanking(ind1, ind2, offStringOX1, offStringOX2, "OX")
-            deleteParents()
+            insertRanking(parent1, parent2, offStringOX1, offStringOX2, "OX")
+            deleteParents(parent1, parent2)
+            insertChildren(offStringOX1, offStringOX2)
+            i++
         }
         ranking.sort()
         println()
@@ -38,11 +46,11 @@ class GeneticAlgorithm(
         for (i in 0 until 6) {
             val (px1, px2) = pxs
 
-            val (ind1, ind2) = selection()
+            val (parent1, parent2) = selection()
 
             val (offStringPMX1, offStringPMX2) = crossoverPMX(ind1, ind2, px1, px2)
-            insertRanking(ind1, ind2, offStringPMX1, offStringPMX2, "PMX")
-            deleteParents()
+            insertRanking(parent1, parent2, offStringPMX1, offStringPMX2, "PMX")
+            deleteParents(parent1, parent2)
             insertChildren(offStringPMX1, offStringPMX2)
         }
         ranking.sort()
@@ -57,8 +65,8 @@ class GeneticAlgorithm(
         crossover: String
     ) {
         val backUp = listOf(
-            /*Model(parent1, "PARENT"),
-            Model(parent2, "PARENT"),*/
+            Model(parent1, "PARENT"),
+            Model(parent2, "PARENT"),
             Model(child1, crossover),
             Model(child2, crossover))
 
@@ -67,17 +75,25 @@ class GeneticAlgorithm(
     }
 
     private fun selection(): Pair<Individual, Individual> {
-        return Pair(population[population.size-2], population[population.size-1])
+        var px1 = Random.nextInt(population.size-1)
+
+        while (px1 == population.size-1)
+            px1 = Random.nextInt(population.size-1)
+
+        Log.d("size", population.size.toString())
+        return Pair(population[px1], population[population.size-1])
     }
 
-    private fun deleteParents() {
-        population.removeAt(population.size-2)
-        population.removeAt(population.size-1)
+    private fun deleteParents(parent1: Individual, parent2: Individual) {
+        population.remove(parent1)
+        population.remove(parent2)
     }
 
     private fun insertChildren(child1: Individual, child2: Individual) {
-        population.add(child1)
-        population.add(child2)
+        if (!population.contains(child1))
+            population.add(child1)
+        if (!population.contains(child2))
+            population.add(child2)
         population.sort()
     }
 

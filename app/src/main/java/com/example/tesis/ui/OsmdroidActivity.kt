@@ -1,4 +1,4 @@
-package com.example.tesis
+package com.example.tesis.ui
 
 import android.annotation.SuppressLint
 import android.graphics.Color
@@ -7,8 +7,11 @@ import android.os.StrictMode
 import android.preference.PreferenceManager
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_osmdroid.*
-import org.apache.commons.lang3.mutable.Mutable
+import com.example.tesis.R
+import com.example.tesis.databinding.ActivityOsmdroidBinding
+import com.example.tesis.core.main
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
@@ -19,6 +22,8 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.InfoWindow
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 @SuppressLint("UseCompatLoadingForDrawables")
 class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
@@ -26,10 +31,12 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     private var list = arrayListOf<GeoPoint>()
     private lateinit var galist: List<Int>
     private lateinit var roadManager: MapQuestRoadManager
+    private lateinit var binding: ActivityOsmdroidBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_osmdroid)
+        binding = ActivityOsmdroidBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initOSMaps()
     }
 
@@ -42,39 +49,42 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
             PreferenceManager.getDefaultSharedPreferences(applicationContext)
         )
 
-        maps.apply {
+        binding.maps.apply {
             setTileSource(TileSourceFactory.MAPNIK)
-            setBuiltInZoomControls(true)
+            setMultiTouchControls(true)
             controller.apply {
-                setCenter(GeoPoint(-33.292991, -66.336391))
-                setZoom(16.5)
+                val mLocationOverlay = MyLocationNewOverlay(
+                    GpsMyLocationProvider(applicationContext), binding.maps)
+                mLocationOverlay.enableMyLocation()
+                mLocationOverlay.enableFollowLocation()
+                binding.maps.overlays.add(mLocationOverlay)
+                setZoom(15.0)
             }
         }
         roadManager = MapQuestRoadManager("A3qGuyvHi1WfLxj1KKh51zxDspxAfOAq")
         roadManager.addRequestOption("routeType=bicycle")
         roadManager.addRequestOption("timeType=1")
 
-        /*val overItem = OverlayItem("Hello Office", "my office", GeoPoint(-33.292991, -66.336391))
-        val overItem2 = OverlayItem("Hello Office", "my office", GeoPoint(-33.294758, -66.336007))
-        overItem.getMarker(0)
-        val items = arrayListOf(overItem, overItem2)
-        val mOverlay = ItemizedOverlayWithFocus(
-            applicationContext,
-            items,
-            object : ItemizedIconOverlay.OnItemGestureListener<OverlayItem> {
-                override fun onItemSingleTapUp(index: Int, item: OverlayItem?) = true
-
-                override fun onItemLongPress(index: Int, item: OverlayItem?) = false
-
-            })
-
-        mOverlay.setFocusItemsOnTap(true)
-        maps.overlays.add(mOverlay)*/
-
         val mapEventsOverlay = MapEventsOverlay(this)
-        maps.overlays.add(0, mapEventsOverlay)
-        InfoWindow.closeAllInfoWindowsOn(maps)
-        //calculateRoute()
+        binding.maps.overlays.add(0, mapEventsOverlay)
+        InfoWindow.closeAllInfoWindowsOn(binding.maps)
+
+        list.forEach {
+            putMarket(it)
+        }
+
+        binding.calculate.setOnClickListener {
+            GlobalScope.launch {
+                galist = main(list)
+                calculateRoute()
+            }
+        }
+        binding.reset.setOnClickListener {
+            binding.maps.overlays.clear()
+            binding.maps.overlays.add(0, mapEventsOverlay)
+            binding.maps.invalidate()
+            list.clear()
+        }
     }
 
     override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
@@ -95,11 +105,11 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     }
 
     private fun putMarket(geoPoint: GeoPoint) {
-        val marker = Marker(maps)
+        val marker = Marker(binding.maps)
         marker.position = geoPoint
         marker.icon = resources.getDrawable(R.drawable.marker_default, null)
-        maps.overlays.add(marker)
-        maps.invalidate()
+        binding.maps.overlays.add(marker)
+        binding.maps.invalidate()
     }
 
     private fun calculateDistance() {
@@ -112,7 +122,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     }
 
     private fun calculateRoute() {
-        maps.overlays.clear()
+        binding.maps.overlays.clear()
 
         val listBis = arrayListOf<GeoPoint>()
         galist.forEach {
@@ -121,42 +131,26 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
         val road = roadManager.getRoad(listBis)
         val polyline = RoadManager.buildRoadOverlay(road, Color.MAGENTA, 5.0f)
-        maps.overlays.add(polyline)
+        binding.maps.overlays.add(polyline)
         road.mNodes.forEachIndexed { index, it ->
-            if (index == 0 || index == road.mNodes.size - 1) {
-                val nodeMarker = Marker(maps)
-                nodeMarker.position = it.mLocation
-                if (index == 0)
-                    nodeMarker.icon = resources.getDrawable(R.drawable.marker_default, null)
-                else
-                    nodeMarker.icon = resources.getDrawable(R.drawable.marker_default_focused_base, null)
-                nodeMarker.title = "Step $index"
-                nodeMarker.snippet = it.mInstructions
-                nodeMarker.subDescription =
-                    Road.getLengthDurationText(this, it.mLength, it.mDuration)
-                nodeMarker.image = resources.getDrawable(R.drawable.ic_menu_offline, null)
-                maps.overlays.add(nodeMarker)
-            }
-        }
-        listBis.forEach{
-            putMarket(it)
+            val nodeMarker = Marker(binding.maps)
+            nodeMarker.position = it.mLocation
+            if (index == 0)
+                nodeMarker.icon = resources.getDrawable(R.drawable.marker_default, null)
+            else
+                nodeMarker.icon = resources.getDrawable(
+                    R.drawable.marker_default_focused_base,
+                    null
+                )
+            nodeMarker.title = "Step $index"
+            nodeMarker.snippet = it.mInstructions
+            nodeMarker.subDescription =
+                Road.getLengthDurationText(this, it.mLength, it.mDuration)
+            nodeMarker.image = resources.getDrawable(R.drawable.ic_menu_offline, null)
+            binding.maps.overlays.add(nodeMarker)
         }
         Log.d("time road", road.mDuration.toString())
 
-        /*val road2 = roadManager.getRoad(list)
-        val polyline2 = RoadManager.buildRoadOverlay(road2, Color.BLACK, 10.0f)
-        maps.overlays.add(polyline2)
-        road2.mNodes.forEachIndexed { index, it ->
-            val nodeMarker = Marker(maps)
-            nodeMarker.position = it.mLocation
-            nodeMarker.icon = resources.getDrawable(R.drawable.marker_default, null)
-            nodeMarker.title = "Step $index"
-            nodeMarker.snippet = it.mInstructions
-            nodeMarker.subDescription = Road.getLengthDurationText(this, it.mLength, it.mDuration)
-            nodeMarker.image = resources.getDrawable(R.drawable.ic_menu_offline, null)
-            maps.overlays.add(nodeMarker)
-        }*/
-
-        maps.invalidate()
+        binding.maps.invalidate()
     }
 }
