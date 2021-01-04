@@ -4,14 +4,14 @@ import kotlin.random.Random
 
 class GeneticAlgorithm(
     private val routeSize: Int,
-    private val populationManager: PopulationManager,
-    private val population: MutableList<Individual>,
+    private val populationManager: PopulationManager
 ) {
     private val ranking = mutableListOf<Model>()
+    private lateinit var population: MutableList<Individual>
 
     fun executeOX(): Individual {
-
         val pxs = getPXS(routeSize)
+        population = populationManager.createPopulation()
         val (firstParent, secondParent) = selection()
         println("INDIVIDUOS PADRES OX: ----->")
         println(firstParent.toString())
@@ -65,7 +65,6 @@ class GeneticAlgorithm(
     }
 
     private fun crossoverOX(first: Individual, second:Individual, px1: Int, px2: Int): Pair<Individual, Individual> {
-       // println("CROSSOVER OX:  -----> ")
         val subStringFirst = arrayListOf<Int>()
         val subStringSecond = arrayListOf<Int>()
         val offSpringFirst = MutableList(routeSize) {0}
@@ -129,19 +128,17 @@ class GeneticAlgorithm(
         return Pair(offStringFirstInd, offStringSecondInd)
     }
 
-    private fun mutation(ind: Individual, mutationRate: Double = 0.1): Individual{
+    private fun mutation(ind: Individual, mutationRate: Double = 0.1) {
         for (i in 0 until ind.list.size) {
             val random = Math.random()
             if (random < mutationRate) {
-                val swapWith = (random * ind.list.size).toInt()
-                val city1 = ind.list[i]
-                val city2 = ind.list[swapWith]
-
-                ind.list[i] = city2
-                ind.list[swapWith] = city1
+                val px = Random.nextInt(routeSize-1)
+                val addressOrigin = ind.list[i]
+                val addressDestination = ind.list[px]
+                ind.list[i] = addressDestination
+                ind.list[px] = addressOrigin
             }
         }
-        return ind
     }
 }
 

@@ -6,13 +6,13 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.preference.PreferenceManager
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tesis.R
 import com.example.tesis.core.RoadManagerObject
 import com.example.tesis.databinding.ActivityOsmdroidBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.osmdroid.bonuspack.routing.MapQuestRoadManager
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
 import org.osmdroid.config.Configuration
@@ -34,7 +34,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     private var model = OmsdroidViewModel()
 
     companion object {
-        private const val ZOOM = 15.0
+        private const val ZOOM = 16.0
         private const val WIDTH = 5.0f
     }
 
@@ -89,9 +89,12 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         }
     }
 
+
     private fun startCalculate() {
+        binding.progressBar.visibility = View.VISIBLE
         GlobalScope.launch {
             calculateRoute(model.getBestRoute(addresses))
+            binding.progressBar.visibility = View.INVISIBLE
         }
     }
 
