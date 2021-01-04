@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Tesis</string>
     <string name="title_activity_maps">Map</string>
-    <string name="app_calculate">Calcular</string>
-    <string name="app_reset">Resetear</string>
+    <string name="app_calculate">Calculate</string>
+    <string name="app_reset">Reset</string>
+    <string name="app_start">Start</string>
+    <string name="app_title">WELCOME TO RUTEATE</string>
 </resources>

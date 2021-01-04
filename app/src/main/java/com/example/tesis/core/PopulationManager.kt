@@ -1,15 +1,21 @@
 package com.example.tesis.core
 
-import android.os.StrictMode
+import kotlinx.coroutines.*
 import org.osmdroid.util.GeoPoint
 import kotlin.random.Random
 
-class PopulationManager(private val entries: MutableList<GeoPoint>) {
-    private var list: MutableList<Individual> = mutableListOf()
-    private lateinit var matrix: Array<DoubleArray>
+class PopulationManager(private val count: Int) {
+    private val matrix: Array<Array<Model>>
+    val entries = mutableListOf<GeoPoint>()
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private var job: Job? = null
 
     init {
-        createDistanceMatrix()
+        matrix = Array(count) {
+            Array(count) {
+                Model(0.0)
+            }
+        }
     }
 
     fun createPopulation(): MutableList<Individual> {
@@ -21,6 +27,7 @@ class PopulationManager(private val entries: MutableList<GeoPoint>) {
         /**
          * Si n (cantidad de direcciones) es mayor a n entonces 500 sino factorial de n es el top
          */
+        val list = mutableListOf<Individual>()
         var top: Long = factorial(entries.size) / 2
         if (top > 500)
             top = 500
@@ -60,10 +67,10 @@ class PopulationManager(private val entries: MutableList<GeoPoint>) {
         for (pos in 0 until entries.size - 1) {
             val gen = i.list[pos]
             val gen2 = i.list[pos+1]
-            i.distance += (matrix[gen][gen2])
+            i.distance += (matrix[gen][gen2]).distance
         }
 
-        i.distance += (matrix[entries.size-1][i.list[0]])
+        i.distance += (matrix[entries.size-1][i.list[0]]).distance
 
         return i
     }
@@ -73,10 +80,10 @@ class PopulationManager(private val entries: MutableList<GeoPoint>) {
         for (pos in 0 until entries.size - 1) {
             val gen = individual.list[pos]
             val gen2 = individual.list[pos+1]
-            distance += (matrix[gen][gen2])
+            distance += (matrix[gen][gen2]).distance
         }
 
-        distance += (matrix[entries.size-1][individual.list[0]])
+        distance += (matrix[entries.size-1][individual.list[0]]).distance
         return distance
     }
 
@@ -87,21 +94,55 @@ class PopulationManager(private val entries: MutableList<GeoPoint>) {
         return individualA.list.zip(individualB.list).all { (eltA, eltB) -> eltA == eltB }
     }
 
-    private fun createDistanceMatrix() {
-        matrix = Array(entries.size) {
-            DoubleArray(entries.size)
+    fun addAddressMatrix(point: GeoPoint) {
+        entries.add(point)
+        if (job != null) {
+            println(job)
+            job?.cancel()
+            println("cancelado")
+            if (job!!.isCompleted) {
+                println("completado")
+                initJob()
+            }
+        } else {
+            initJob()
         }
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
+    }
+
+    private fun initJob() {
+        job = coroutineScope.launch {
+            println("iniciado")
+            delay(DELAY)
+            calculateMatrix()
+        }
+    }
+
+    fun calculateMatrix() {
         entries.forEachIndexed { indexOrigin, geoPointOrigin ->
             entries.forEachIndexed { indexDestination, geoPointDestination ->
                 if (indexOrigin != indexDestination) {
-                    val distance = RoadManagerObject.getRoadManager()
-                        .getRoad(arrayListOf(geoPointOrigin, geoPointDestination))
-                        .mLength
-                    matrix[indexOrigin][indexDestination] = distance
+                    if (!matrix[indexOrigin][indexDestination].inicialize) {
+                        val distance = RoadManagerObject.getRoadManager()
+                            .getRoad(arrayListOf(geoPointOrigin, geoPointDestination))
+                            .mLength
+                        matrix[indexOrigin][indexDestination] = Model(distance,true)
+                    }
                 }
             }
         }
+    }
+
+    fun reset() {
+        entries.clear()
+        for (i in matrix[0].indices)
+            for (j in matrix[0].indices) {
+                matrix[i][j] = Model(0.0)
+            }
+    }
+
+    inner class Model(val distance: Double, var inicialize: Boolean = false)
+
+    companion object {
+        private const val DELAY = 1000L
     }
 }

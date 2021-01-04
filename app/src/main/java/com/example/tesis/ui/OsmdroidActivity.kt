@@ -7,11 +7,13 @@ import android.os.StrictMode
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.tesis.R
 import com.example.tesis.core.RoadManagerObject
 import com.example.tesis.databinding.ActivityOsmdroidBinding
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
@@ -31,17 +33,21 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     private var addresses = arrayListOf<GeoPoint>()
     private lateinit var binding: ActivityOsmdroidBinding
     private lateinit var mapEventsOverlay: MapEventsOverlay
-    private var model = OmsdroidViewModel()
+    private lateinit var model: OsmdroidViewModel
 
     companion object {
         private const val ZOOM = 16.0
         private const val WIDTH = 5.0f
+        private const val COUNT = "COUNT"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOsmdroidBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        intent.extras?.getString(COUNT)?.let {
+            model = OsmdroidViewModel(it.toInt())
+        }
         initOSMaps()
     }
 
@@ -91,10 +97,23 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
 
     private fun startCalculate() {
-        binding.progressBar.visibility = View.VISIBLE
+        disabledWindow(true)
         GlobalScope.launch {
-            calculateRoute(model.getBestRoute(addresses))
-            binding.progressBar.visibility = View.INVISIBLE
+            calculateRoute(model.getBestRoute())
+            MainScope().launch {
+                disabledWindow(false)
+            }
+        }
+    }
+
+    private fun disabledWindow(isBlock: Boolean) {
+        if (isBlock) {
+            binding.viewProgress.visibility = View.VISIBLE
+            window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+        } else {
+            binding.viewProgress.visibility = View.INVISIBLE
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         }
     }
 
@@ -103,6 +122,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         binding.maps.overlays.add(0, mapEventsOverlay)
         binding.maps.invalidate()
         addresses.clear()
+        model.resetPopulation()
         setCenter()
     }
 
@@ -119,6 +139,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     }
 
     private fun putMarket(geoPoint: GeoPoint) {
+        model.addAddresses(geoPoint)
         val marker = Marker(binding.maps)
         marker.position = geoPoint
         marker.icon = resources.getDrawable(R.drawable.marker_default, null)

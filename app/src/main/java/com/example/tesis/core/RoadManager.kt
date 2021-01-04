@@ -1,5 +1,6 @@
 package com.example.tesis.core
 
+import android.os.StrictMode
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager
 
 object RoadManagerObject {
@@ -12,6 +13,8 @@ object RoadManagerObject {
 
     fun getRoadManager(): MapQuestRoadManager {
         if (!init) {
+            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
             roadManager = MapQuestRoadManager(KEY)
             roadManager.addRequestOption(ROUTE_TYPE_REQUEST_OPTION)
             roadManager.addRequestOption(TIME_TYPE_REQUEST_OPTION)

@@ -3,11 +3,11 @@ package com.example.tesis.core
 import kotlin.random.Random
 
 class GeneticAlgorithm(
-    private val routeSize: Int,
     private val populationManager: PopulationManager
 ) {
     private val ranking = mutableListOf<Model>()
     private lateinit var population: MutableList<Individual>
+    private val routeSize = populationManager.entries.size
 
     fun executeOX(): Individual {
         val pxs = getPXS(routeSize)
