@@ -23,6 +23,7 @@
         app:layout_constraintEnd_toStartOf="@+id/reset"
         app:layout_constraintBottom_toBottomOf="parent"
         android:elevation="1dp"
+        android:enabled="false"
         android:text="@string/app_calculate" />
 
     <Button

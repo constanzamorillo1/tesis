@@ -10,8 +10,10 @@ import kotlin.system.measureTimeMillis
 class OsmdroidViewModel(count: Int): ViewModel() {
 
     private var populationManager = PopulationManager(count)
+    private val bestRoute = arrayListOf<GeoPoint>()
 
     fun resetPopulation() {
+        bestRoute.clear()
         populationManager.reset()
     }
 
@@ -19,16 +21,22 @@ class OsmdroidViewModel(count: Int): ViewModel() {
         populationManager.addAddressMatrix(point)
     }
 
+    fun setMyLocation(location: GeoPoint) {
+        populationManager.setMyLocation(location)
+        bestRoute.add(location)
+    }
+
     fun getBestRoute(): ArrayList<GeoPoint> {
-        val output = arrayListOf<GeoPoint>()
         val time = measureTimeMillis {
+            populationManager.calculateDistanceOrigin()
             populationManager.calculateMatrix()
+            populationManager.toStringMatrix()
             val individual = GeneticAlgorithm(populationManager).executeOX()
             individual.list.forEach { address ->
-                output.add(populationManager.entries[address])
+                bestRoute.add(populationManager.entries[address])
             }
         }
         Log.d("time","total time is: $time milisegundos")
-        return output
+        return bestRoute
     }
 }

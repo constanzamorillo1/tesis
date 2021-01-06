@@ -6,6 +6,8 @@ import kotlin.random.Random
 
 class PopulationManager(private val count: Int) {
     private val matrix: Array<Array<Model>>
+    private val arrayDistanceOrigin = arrayListOf<Double>()
+    private lateinit var myLocation: GeoPoint
     val entries = mutableListOf<GeoPoint>()
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
@@ -16,6 +18,11 @@ class PopulationManager(private val count: Int) {
                 Model(0.0)
             }
         }
+    }
+
+    fun setMyLocation(location: GeoPoint) {
+        myLocation = location
+        arrayDistanceOrigin.add(0.0)
     }
 
     fun createPopulation(): MutableList<Individual> {
@@ -84,6 +91,7 @@ class PopulationManager(private val count: Int) {
         }
 
         distance += (matrix[entries.size-1][individual.list[0]]).distance
+        distance += arrayDistanceOrigin[individual.list[0]]
         return distance
     }
 
@@ -96,30 +104,27 @@ class PopulationManager(private val count: Int) {
 
     fun addAddressMatrix(point: GeoPoint) {
         entries.add(point)
-        if (job != null) {
-            println(job)
-            job?.cancel()
-            println("cancelado")
-            if (job!!.isCompleted) {
-                println("completado")
-                initJob()
-            }
-        } else {
-            initJob()
+        job?.cancel()
+        job = coroutineScope.launch {
+            calculateMatrix()
+            delay(DELAY)
         }
     }
 
-    private fun initJob() {
-        job = coroutineScope.launch {
-            println("iniciado")
-            delay(DELAY)
-            calculateMatrix()
+    fun calculateDistanceOrigin() {
+        entries.forEachIndexed { index, it ->
+            if (index != 0) {
+                val distance = RoadManagerObject.getRoadManager()
+                    .getRoad(arrayListOf(myLocation, it))
+                    .mLength
+                arrayDistanceOrigin.add(distance)
+            }
         }
     }
 
     fun calculateMatrix() {
-        entries.forEachIndexed { indexOrigin, geoPointOrigin ->
-            entries.forEachIndexed { indexDestination, geoPointDestination ->
+        copy().forEachIndexed { indexOrigin, geoPointOrigin ->
+            copy().forEachIndexed { indexDestination, geoPointDestination ->
                 if (indexOrigin != indexDestination) {
                     if (!matrix[indexOrigin][indexDestination].inicialize) {
                         val distance = RoadManagerObject.getRoadManager()
@@ -140,7 +145,28 @@ class PopulationManager(private val count: Int) {
             }
     }
 
-    inner class Model(val distance: Double, var inicialize: Boolean = false)
+    fun toStringMatrix() {
+        for (i in matrix[0].indices) {
+            for (j in matrix[0].indices)
+                print("${matrix[i][j]} - ")
+            println()
+        }
+
+    }
+
+    private fun copy(): MutableList<GeoPoint> {
+        val list = mutableListOf<GeoPoint>()
+        entries.forEach {
+            list.add(it)
+        }
+        return list
+    }
+
+    inner class Model(val distance: Double, var inicialize: Boolean = false) {
+        override fun toString(): String{
+            return "Distance : $distance and Inicialize: $inicialize"
+        }
+    }
 
     companion object {
         private const val DELAY = 1000L

@@ -1,7 +1,12 @@
 package com.example.tesis.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.StrictMode
 import android.preference.PreferenceManager
@@ -9,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.tesis.R
 import com.example.tesis.core.RoadManagerObject
 import com.example.tesis.databinding.ActivityOsmdroidBinding
@@ -30,10 +36,11 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 @SuppressLint("UseCompatLoadingForDrawables")
 class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
-    private var addresses = arrayListOf<GeoPoint>()
     private lateinit var binding: ActivityOsmdroidBinding
     private lateinit var mapEventsOverlay: MapEventsOverlay
     private lateinit var model: OsmdroidViewModel
+    private var count: Int = 0
+    private var addresses: Int = 0
 
     companion object {
         private const val ZOOM = 16.0
@@ -47,6 +54,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         setContentView(binding.root)
         intent.extras?.getString(COUNT)?.let {
             model = OsmdroidViewModel(it.toInt())
+            count = it.toInt()
         }
         initOSMaps()
     }
@@ -78,6 +86,36 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                 setZoom(ZOOM)
             }
         }
+        setListenerMyLocation()
+    }
+
+    private fun setListenerMyLocation() {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationListener = object: LocationListener {
+            override fun onLocationChanged(location: Location?) {
+                location?.let {
+                    putMarket(GeoPoint(it.latitude, it.longitude), false)
+                    model.setMyLocation(GeoPoint(it.latitude, it.longitude))
+                    println("ONLOCATIONCHANGED")
+                    println(it.latitude)
+                    println(it.longitude)
+                }
+            }
+
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+                //NOTHING HERE
+            }
+
+            override fun onProviderEnabled(provider: String?) {
+                //NOTHING HERE
+            }
+
+            override fun onProviderDisabled(provider: String?) {
+                //NOTHING HERE
+            }
+        }
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 100F, locationListener)
     }
 
     private fun setMapComponents() {
@@ -104,6 +142,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                 disabledWindow(false)
             }
         }
+        binding.calculate.isEnabled = false
     }
 
     private fun disabledWindow(isBlock: Boolean) {
@@ -118,12 +157,19 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     }
 
     private fun resetMap() {
-        binding.maps.overlays.clear()
-        binding.maps.overlays.add(0, mapEventsOverlay)
-        binding.maps.invalidate()
-        addresses.clear()
         model.resetPopulation()
+        binding.run {
+            maps.apply {
+                overlays.apply {
+                    clear()
+                    add(0, mapEventsOverlay)
+                    invalidate()
+                }
+            }
+            calculate.isEnabled = false
+        }
         setCenter()
+        addresses = 0
     }
 
     override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
@@ -132,14 +178,19 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
     override fun longPressHelper(p: GeoPoint?): Boolean {
         p?.let {
-            putMarket(it)
-            addresses.add(it)
+            addresses++
+            if (addresses <= count) {
+                putMarket(it)
+                if (addresses == count)
+                    binding.calculate.isEnabled = true
+            }
         }
         return true
     }
 
-    private fun putMarket(geoPoint: GeoPoint) {
-        model.addAddresses(geoPoint)
+    private fun putMarket(geoPoint: GeoPoint, add: Boolean = true) {
+        if (add)
+            model.addAddresses(geoPoint)
         val marker = Marker(binding.maps)
         marker.position = geoPoint
         marker.icon = resources.getDrawable(R.drawable.marker_default, null)
