@@ -106,20 +106,17 @@ class PopulationManager(private val count: Int) {
         entries.add(point)
         job?.cancel()
         job = coroutineScope.launch {
+            calculateDistanceOrigin(point)
             calculateMatrix()
             delay(DELAY)
         }
     }
 
-    fun calculateDistanceOrigin() {
-        entries.forEachIndexed { index, it ->
-            if (index != 0) {
-                val distance = RoadManagerObject.getRoadManager()
-                    .getRoad(arrayListOf(myLocation, it))
-                    .mLength
-                arrayDistanceOrigin.add(distance)
-            }
-        }
+    private fun calculateDistanceOrigin(point: GeoPoint) {
+        val distance = RoadManagerObject.getRoadManager()
+            .getRoad(arrayListOf(myLocation, point))
+            .mLength
+        arrayDistanceOrigin.add(distance)
     }
 
     fun calculateMatrix() {

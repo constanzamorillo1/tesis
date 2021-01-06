@@ -28,7 +28,6 @@ class OsmdroidViewModel(count: Int): ViewModel() {
 
     fun getBestRoute(): ArrayList<GeoPoint> {
         val time = measureTimeMillis {
-            populationManager.calculateDistanceOrigin()
             populationManager.calculateMatrix()
             populationManager.toStringMatrix()
             val individual = GeneticAlgorithm(populationManager).executeOX()
