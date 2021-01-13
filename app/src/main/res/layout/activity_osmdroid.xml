@@ -6,10 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".ui.OsmdroidActivity">
 
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:queryHint="Ingrese Dirección"
+        android:iconifiedByDefault="false"
+        android:layout_height="wrap_content"/>
+
     <org.osmdroid.views.MapView
         android:id="@+id/maps"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="-16dp">
     </org.osmdroid.views.MapView>

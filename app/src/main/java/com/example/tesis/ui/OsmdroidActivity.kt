@@ -13,6 +13,8 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.tesis.R
@@ -99,7 +101,6 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                     println("ONLOCATIONCHANGED")
                     println(it.latitude)
                     println(it.longitude)
-                    getAddressResults("Caseros 144, Puerto Madryn")
                 }
             }
 
@@ -123,6 +124,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         model.getPoints(address)
         model.point.observe(this@OsmdroidActivity,{ point ->
             point.toString()
+            putMarket(GeoPoint(point[0].latLng.lat, point[0].latLng.lng))
         })
     }
 
@@ -138,6 +140,21 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         }
         binding.reset.setOnClickListener {
           resetMap()
+        }
+        binding.searchView.run {
+            this.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    query?.let {
+                        getAddressResults(it)
+                        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                    }
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return false
+                }
+            })
         }
     }
 
