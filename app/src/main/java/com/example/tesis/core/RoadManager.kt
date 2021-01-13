@@ -1,10 +1,10 @@
 package com.example.tesis.core
 
 import android.os.StrictMode
+import com.example.tesis.domain.AbstractRepository.Companion.KEY
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager
 
 object RoadManagerObject {
-    private const val KEY = "A3qGuyvHi1WfLxj1KKh51zxDspxAfOAq"
     private const val ROUTE_TYPE_REQUEST_OPTION = "routeType=bicycle"
     private const val TIME_TYPE_REQUEST_OPTION = "timeType=1"
 

@@ -118,6 +118,13 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 100F, locationListener)
     }
 
+    private fun getAddressResults(address: String) {
+        model.getPoints(address)
+        model.point.observe(this@OsmdroidActivity,{ point ->
+            //putMarket(point)
+        })
+    }
+
     private fun setMapComponents() {
         mapEventsOverlay = MapEventsOverlay(this)
         binding.maps.overlays.add(0, mapEventsOverlay)
