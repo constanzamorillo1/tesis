@@ -99,6 +99,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                     println("ONLOCATIONCHANGED")
                     println(it.latitude)
                     println(it.longitude)
+                    getAddressResults("Caseros 144, Puerto Madryn")
                 }
             }
 
@@ -121,7 +122,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     private fun getAddressResults(address: String) {
         model.getPoints(address)
         model.point.observe(this@OsmdroidActivity,{ point ->
-            //putMarket(point)
+            point.toString()
         })
     }
 
