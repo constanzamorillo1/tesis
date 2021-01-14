@@ -124,7 +124,6 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                 if (!myCurrentPosition)
                     location?.let {
                         myCurrentPosition = true
-                        putMarket(GeoPoint(it.latitude, it.longitude), false)
                         model.setMyLocation(GeoPoint(it.latitude, it.longitude))
                         println("ONLOCATIONCHANGED")
                         println(it.latitude)
@@ -218,8 +217,8 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                 }
             }
             calculate.isEnabled = false
+            setCenter()
         }
-        setCenter()
     }
 
     override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
@@ -242,9 +241,8 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         return true
     }
 
-    private fun putMarket(geoPoint: GeoPoint, add: Boolean = true) {
-        if (add)
-            model.addAddresses(geoPoint)
+    private fun putMarket(geoPoint: GeoPoint) {
+        model.addAddresses(geoPoint)
         val marker = Marker(binding.maps)
         marker.position = geoPoint
         marker.icon = resources.getDrawable(R.drawable.marker_default, null)

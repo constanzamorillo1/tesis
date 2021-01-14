@@ -19,40 +19,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/title"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
         android:layout_width="@dimen/ui_0m"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/ui_3m"
-        android:layout_marginStart="@dimen/ui_3m"
-        android:layout_marginEnd="@dimen/ui_3m"
-        android:gravity="center_horizontal"
-        android:text="@string/app_title_count"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        android:layout_height="@dimen/ui_0m"
+        android:overScrollMode="never"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-   <EditText
-       android:id="@+id/countInput"
-       android:layout_width="@dimen/ui_0m"
-       android:layout_height="wrap_content"
-       android:layout_marginTop="@dimen/ui_5m"
-       android:layout_marginStart="@dimen/ui_6m"
-       android:layout_marginEnd="@dimen/ui_6m"
-       app:iconifiedByDefault="false"
-       android:inputType="number"
-       android:textAlignment="center"
-       app:layout_constraintTop_toBottomOf="@+id/textView"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintStart_toStartOf="parent"/>
-
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/ui_1m"
-        app:layout_constraintTop_toBottomOf="@+id/countInput"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="@string/app_start"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
