@@ -18,9 +18,9 @@ class OsmdroidViewModel(count: Int): ViewModel() {
     private var populationManager = PopulationManager(count)
     private val bestRoute = arrayListOf<GeoPoint>()
     private val repository = OpenStreetMapRepository()
-    private val pointMutableLiveData = MutableLiveData<List<Location>>()
+    private var pointMutableLiveData = MutableLiveData<State>()
 
-    val point: LiveData<List<Location>>
+    val point: LiveData<State>
         get() = pointMutableLiveData
 
     fun resetPopulation() {
@@ -38,11 +38,13 @@ class OsmdroidViewModel(count: Int): ViewModel() {
     }
 
     fun getPoints(address: String){
+        pointMutableLiveData.postValue(State.ShowLoading)
         repository.getAddressPoint(address) {
             Log.d("results", it.toString())
-           if (it is RepositoryResult.Success) {
-               pointMutableLiveData.postValue(it.value.results[0].locations)
+            if (it is RepositoryResult.Success) {
+               pointMutableLiveData.value = State.Success(it.value.results[0].locations)
             }
+            pointMutableLiveData.postValue(State.HideLoading)
         }
     }
 
@@ -58,4 +60,10 @@ class OsmdroidViewModel(count: Int): ViewModel() {
         Log.d("time","total time is: $time milisegundos")
         return bestRoute
     }
+}
+
+sealed class State {
+    object HideLoading : State()
+    object ShowLoading : State()
+    class Success(val response: List<Location>): State()
 }

@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">Tesis</string>
+    <string name="app_name">Ruteate</string>
     <string name="title_activity_maps">Map</string>
-    <string name="app_calculate">Calculate</string>
+    <string name="app_calculate">Calcular</string>
     <string name="app_reset">Reset</string>
-    <string name="app_start">Start</string>
-    <string name="app_title">WELCOME TO RUTEATE</string>
+    <string name="app_start">Empezar</string>
+    <string name="app_title">¡Bienvenido a Ruteate!</string>
+    <string name="app_title_count">Cuántas direcciones visitarás?</string>
 </resources>

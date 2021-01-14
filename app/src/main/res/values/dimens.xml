@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="ui_0m">0dp</dimen>
+    <dimen name="ui_1m">8dp</dimen>
+    <dimen name="ui_2m">16dp</dimen>
+    <dimen name="ui_3m">24dp</dimen>
+    <dimen name="ui_4m">32dp</dimen>
+    <dimen name="font_ui_3m">24sp</dimen>
+</resources>

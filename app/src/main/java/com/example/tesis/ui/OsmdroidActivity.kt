@@ -20,9 +20,7 @@ import androidx.core.content.ContextCompat
 import com.example.tesis.R
 import com.example.tesis.core.RoadManagerObject
 import com.example.tesis.databinding.ActivityOsmdroidBinding
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
 import org.osmdroid.config.Configuration
@@ -43,20 +41,22 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     private lateinit var model: OsmdroidViewModel
     private var count: Int = 0
     private var addresses: Int = 0
+    private var myCurrentPosition = false
 
     companion object {
         private const val ZOOM = 16.0
         private const val WIDTH = 5.0f
         private const val COUNT = "COUNT"
+        private const val RESET_STRING = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOsmdroidBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        intent.extras?.getString(COUNT)?.let {
-            model = OsmdroidViewModel(it.toInt())
-            count = it.toInt()
+        intent.extras?.getInt(COUNT)?.let {
+            model = OsmdroidViewModel(it)
+            count = it
         }
         initOSMaps()
     }
@@ -71,8 +71,30 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         )
 
         setCenter()
+        setObservers()
         setMapComponents()
         setViewComponents()
+    }
+
+    private fun setObservers() {
+        model.point.observe(this@OsmdroidActivity,{ response ->
+            when(response) {
+                is State.ShowLoading -> {
+                    binding.viewProgress.visibility = View.VISIBLE
+                }
+                is State.HideLoading -> {
+                    binding.viewProgress.visibility = View.INVISIBLE
+                }
+                is State.Success -> {
+                    val point = response.response[0]
+                    longPressHelper(GeoPoint(point.latLng.lat, point.latLng.lng))
+                    binding.searchView.run {
+                        setQuery(RESET_STRING, false)
+                        clearFocus()
+                    }
+                }
+            }
+        })
     }
 
     private fun setCenter() {
@@ -95,13 +117,15 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val locationListener = object: LocationListener {
             override fun onLocationChanged(location: Location?) {
-                location?.let {
-                    putMarket(GeoPoint(it.latitude, it.longitude), false)
-                    model.setMyLocation(GeoPoint(it.latitude, it.longitude))
-                    println("ONLOCATIONCHANGED")
-                    println(it.latitude)
-                    println(it.longitude)
-                }
+                if (!myCurrentPosition)
+                    location?.let {
+                        myCurrentPosition = true
+                        putMarket(GeoPoint(it.latitude, it.longitude), false)
+                        model.setMyLocation(GeoPoint(it.latitude, it.longitude))
+                        println("ONLOCATIONCHANGED")
+                        println(it.latitude)
+                        println(it.longitude)
+                    }
             }
 
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
@@ -122,10 +146,6 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
     private fun getAddressResults(address: String) {
         model.getPoints(address)
-        model.point.observe(this@OsmdroidActivity,{ point ->
-            point.toString()
-            putMarket(GeoPoint(point[0].latLng.lat, point[0].latLng.lng))
-        })
     }
 
     private fun setMapComponents() {
@@ -183,6 +203,9 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
     private fun resetMap() {
         model.resetPopulation()
+        addresses = 0
+        myCurrentPosition = false
+        setCenter()
         binding.run {
             maps.apply {
                 overlays.apply {
@@ -193,8 +216,6 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
             }
             calculate.isEnabled = false
         }
-        setCenter()
-        addresses = 0
     }
 
     override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
@@ -206,8 +227,12 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
             addresses++
             if (addresses <= count) {
                 putMarket(it)
-                if (addresses == count)
+                if (addresses == count && myCurrentPosition)
                     binding.calculate.isEnabled = true
+            } else {
+                if (myCurrentPosition) {
+                    binding.calculate.isEnabled = true
+                }
             }
         }
         return true
