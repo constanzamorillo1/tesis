@@ -5,5 +5,7 @@
     <dimen name="ui_2m">16dp</dimen>
     <dimen name="ui_3m">24dp</dimen>
     <dimen name="ui_4m">32dp</dimen>
+    <dimen name="ui_5m">40dp</dimen>
+    <dimen name="ui_6m">48dp</dimen>
     <dimen name="font_ui_3m">24sp</dimen>
 </resources>

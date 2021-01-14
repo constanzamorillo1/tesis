@@ -45,9 +45,11 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
     companion object {
         private const val ZOOM = 16.0
-        private const val WIDTH = 5.0f
+        private const val WIDTH = 10.0f
         private const val COUNT = "COUNT"
         private const val RESET_STRING = ""
+        private const val LABEL_ARRIVED_POINT = "Punto de llegada"
+        private const val STEP = "PASO"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,11 +88,13 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                     binding.viewProgress.visibility = View.INVISIBLE
                 }
                 is State.Success -> {
-                    val point = response.response[0]
-                    longPressHelper(GeoPoint(point.latLng.lat, point.latLng.lng))
-                    binding.searchView.run {
-                        setQuery(RESET_STRING, false)
-                        clearFocus()
+                    if (response.response.isNotEmpty()) {
+                        val point = response.response.first()
+                        longPressHelper(GeoPoint(point.latLng.lat, point.latLng.lng))
+                        binding.searchView.run {
+                            setQuery(RESET_STRING, false)
+                            clearFocus()
+                        }
                     }
                 }
             }
@@ -205,7 +209,6 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         model.resetPopulation()
         addresses = 0
         myCurrentPosition = false
-        setCenter()
         binding.run {
             maps.apply {
                 overlays.apply {
@@ -216,6 +219,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
             }
             calculate.isEnabled = false
         }
+        setCenter()
     }
 
     override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
@@ -244,37 +248,40 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         val marker = Marker(binding.maps)
         marker.position = geoPoint
         marker.icon = resources.getDrawable(R.drawable.marker_default, null)
+        marker.title = LABEL_ARRIVED_POINT
         binding.maps.overlays.add(marker)
         binding.maps.invalidate()
     }
 
     private fun calculateRoute(bestRoute: ArrayList<GeoPoint>) {
         val road = RoadManagerObject.getRoadManager().getRoad(bestRoute)
-        val polyline = RoadManager.buildRoadOverlay(road, Color.MAGENTA, WIDTH)
+        val polyline = RoadManager.buildRoadOverlay(road, Color.CYAN, WIDTH)
         binding.maps.overlays.add(polyline)
         road.mNodes.forEachIndexed { index, it ->
-            if (index == 0 || index == road.mNodes.size - 1) {
-                val nodeMarker = Marker(binding.maps)
-                nodeMarker.position = it.mLocation
-                when (index) {
-                    0 -> {
-                        nodeMarker.icon = resources.getDrawable(R.drawable.ic_start, null)
-                    }
-                    road.mNodes.size - 1 -> {
-                        nodeMarker.icon = resources.getDrawable(R.drawable.ic_finish, null)
-                    }
+            val nodeMarker = Marker(binding.maps)
+            nodeMarker.position = it.mLocation
+            when (index) {
+                0 -> {
+                    nodeMarker.icon = resources.getDrawable(R.drawable.ic_start, null)
+                    nodeMarker.image = resources.getDrawable(R.drawable.ic_start, null)
                 }
-
-                nodeMarker.title = "Step $index"
-                nodeMarker.snippet = it.mInstructions
-                nodeMarker.subDescription =
-                    Road.getLengthDurationText(this, it.mLength, it.mDuration)
-                nodeMarker.image = resources.getDrawable(R.drawable.ic_menu_offline, null)
-                binding.maps.overlays.add(nodeMarker)
+                road.mNodes.size - 1 -> {
+                    nodeMarker.icon = resources.getDrawable(R.drawable.ic_finish, null)
+                    nodeMarker.image = resources.getDrawable(R.drawable.ic_finish, null)
+                }
+                else -> {
+                    nodeMarker.icon = resources.getDrawable(R.drawable.ic_middle_marker, null)
+                    nodeMarker.image = resources.getDrawable(R.drawable.ic_middle_marker, null)
+                }
             }
+
+            nodeMarker.title = "$STEP $index"
+            nodeMarker.snippet = it.mInstructions
+            nodeMarker.subDescription =
+                Road.getLengthDurationText(this, it.mLength, it.mDuration)
+            binding.maps.overlays.add(nodeMarker)
         }
         Log.d("time road", road.mDuration.toString())
-
         binding.maps.invalidate()
     }
 }

@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.startButton.setOnClickListener {
             val intent = Intent(this, OsmdroidActivity::class.java)
-            intent.putExtra(COUNT, binding.countInput.text)
+            intent.putExtra(COUNT, binding.countInput.text.toString().toInt())
             startActivity(intent)
         }
     }

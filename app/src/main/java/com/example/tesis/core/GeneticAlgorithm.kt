@@ -5,7 +5,7 @@ import kotlin.random.Random
 class GeneticAlgorithm(
     private val populationManager: PopulationManager
 ) {
-    private val ranking = mutableListOf<Model>()
+    private val ranking = mutableListOf<Individual>()
     private lateinit var population: MutableList<Individual>
     private val routeSize = populationManager.entries.size
 
@@ -20,26 +20,23 @@ class GeneticAlgorithm(
         while (i < 50 && population.size > 0) {
             val (parent1, parent2) = selection()
             val (offStringOX1, offStringOX2) = crossoverOX(firstParent, secondParent, pxs.first, pxs.second)
+            mutation(offStringOX1)
+            mutation(offStringOX2)
             insertRanking(parent1, parent2, offStringOX1, offStringOX2)
             deleteParents(parent1, parent2)
             insertChildren(offStringOX1, offStringOX2)
             i++
         }
         ranking.sort()
-        println("EL MEJORCITO ES: ${ranking[0].individual}")
-        return ranking[0].individual
+        println("EL MEJORCITO ES: ${ranking.first()}")
+        return ranking.first()
     }
 
     private fun insertRanking(
         firstParent: Individual, secondParent: Individual,
         firstChild: Individual, secondChild: Individual
     ) {
-        val backUp = listOf(
-            Model(firstParent, "PARENT"),
-            Model(secondParent, "PARENT"),
-            Model(firstChild, "OX"),
-            Model(secondChild, "OX"))
-
+        val backUp = listOf(firstParent, secondParent, firstChild, secondChild)
         val insert = backUp.sorted()[0]
         ranking.add(insert)
     }
@@ -142,34 +139,4 @@ class GeneticAlgorithm(
     }
 }
 
-
-fun getPXS(routeSize: Int): Pair<Int, Int> {
-    var px1 = Random.nextInt(routeSize-1)
-    var px2 = Random.nextInt(routeSize-1)
-
-    while (px1 == px2 || px1 == (routeSize-1) || px1 == 0
-        || px2 == (routeSize-1) || px2 == 0) {
-        px1 = Random.nextInt(routeSize-1)
-        px2 = Random.nextInt(routeSize-1)
-    }
-
-    val extraPx = px1
-    if (px1 > px2) {
-        px1 = px2
-        px2 = extraPx
-    }
-    return Pair(px1, px2)
-}
-
-fun List<Int>. print() {
-    this.forEach {
-        print(" $it")
-    }
-}
-
-class Model(val individual: Individual, val crossover: String): Comparable<Model> {
-    override fun compareTo(other: Model): Int {
-        return this.individual.compareTo(other.individual)
-    }
-}
 

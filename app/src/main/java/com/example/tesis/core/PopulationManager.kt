@@ -6,7 +6,7 @@ import kotlin.random.Random
 
 class PopulationManager(private val count: Int) {
     private val matrix: Array<Array<Model>>
-    private val arrayDistanceOrigin = arrayListOf<Double>()
+    private val arrayDistanceOrigin = arrayListOf<GoAndGoBackDistance>()
     private lateinit var myLocation: GeoPoint
     val entries = mutableListOf<GeoPoint>()
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
@@ -22,15 +22,10 @@ class PopulationManager(private val count: Int) {
 
     fun setMyLocation(location: GeoPoint) {
         myLocation = location
-        arrayDistanceOrigin.add(0.0)
+        arrayDistanceOrigin.add(GoAndGoBackDistance(0.0, 0.0))
     }
 
     fun createPopulation(): MutableList<Individual> {
-        /**
-         * Definir como variable de entrada (tamaño de entrada)
-         * Pensar un apartado para definir parametros de algoritmo genetico
-         */
-
         /**
          * Si n (cantidad de direcciones) es mayor a n entonces 500 sino factorial de n es el top
          */
@@ -70,15 +65,7 @@ class PopulationManager(private val count: Int) {
                 i.list.add(randomA)
             }
         }
-
-        for (pos in 0 until entries.size - 1) {
-            val gen = i.list[pos]
-            val gen2 = i.list[pos+1]
-            i.distance += (matrix[gen][gen2]).distance
-        }
-
-        i.distance += (matrix[entries.size-1][i.list[0]]).distance
-
+        i.distance = calculateDistance(i)
         return i
     }
 
@@ -90,8 +77,9 @@ class PopulationManager(private val count: Int) {
             distance += (matrix[gen][gen2]).distance
         }
 
-        distance += (matrix[entries.size-1][individual.list[0]]).distance
-        distance += arrayDistanceOrigin[individual.list[0]]
+        distance += (matrix[entries.size-1][individual.list.first()]).distance
+        distance += arrayDistanceOrigin[individual.list.first()].distanceGo
+        distance += arrayDistanceOrigin[individual.list.first()].distanceGoBack
         return distance
     }
 
@@ -113,10 +101,13 @@ class PopulationManager(private val count: Int) {
     }
 
     private fun calculateDistanceOrigin(point: GeoPoint) {
-        val distance = RoadManagerObject.getRoadManager()
+        val distanceGo = RoadManagerObject.getRoadManager()
             .getRoad(arrayListOf(myLocation, point))
             .mLength
-        arrayDistanceOrigin.add(distance)
+        val distanceGoBack = RoadManagerObject.getRoadManager()
+            .getRoad(arrayListOf(point, myLocation))
+            .mLength
+        arrayDistanceOrigin.add(GoAndGoBackDistance(distanceGo, distanceGoBack))
     }
 
     fun calculateMatrix() {
@@ -164,6 +155,8 @@ class PopulationManager(private val count: Int) {
             return "Distance : $distance and Inicialize: $inicialize"
         }
     }
+
+    inner class GoAndGoBackDistance(val distanceGo: Double, val distanceGoBack: Double)
 
     companion object {
         private const val DELAY = 1000L
