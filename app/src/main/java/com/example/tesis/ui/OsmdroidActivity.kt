@@ -45,7 +45,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
     companion object {
         private const val ZOOM = 16.0
-        private const val WIDTH = 10.0f
+        private const val WIDTH = 6.5f
         private const val COUNT = "COUNT"
         private const val RESET_STRING = ""
         private const val LABEL_ARRIVED_POINT = "Punto de llegada"
@@ -251,9 +251,34 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         binding.maps.invalidate()
     }
 
+    private fun putMarketWithNumber(bestRoute: ArrayList<GeoPoint>) {
+        binding.maps.apply {
+            overlays.apply {
+                clear()
+                add(0, mapEventsOverlay)
+                invalidate()
+            }
+        }
+        bestRoute.forEachIndexed { index, geoPoint ->
+            if (index != 0 && index != bestRoute.size - 1) {
+                val name = "@drawable/ic_number_$index"
+                val drawable = resources.getIdentifier(name, null, packageName)
+                val marker = Marker(binding.maps)
+                marker.position = geoPoint
+                marker.icon = resources.getDrawable(drawable, null)
+                marker.title = "$LABEL_ARRIVED_POINT $index"
+                binding.maps.apply {
+                    overlays.add(marker)
+                    invalidate()
+                }
+            }
+        }
+    }
+
     private fun calculateRoute(bestRoute: ArrayList<GeoPoint>) {
+        putMarketWithNumber(bestRoute)
         val road = RoadManagerObject.getRoadManager().getRoad(bestRoute)
-        val polyline = RoadManager.buildRoadOverlay(road, Color.CYAN, WIDTH)
+        val polyline = RoadManager.buildRoadOverlay(road, Color.parseColor("#FFD6614E"), WIDTH)
         binding.maps.overlays.add(polyline)
         road.mNodes.forEachIndexed { index, it ->
             val nodeMarker = Marker(binding.maps)
