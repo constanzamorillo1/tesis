@@ -6,5 +6,6 @@
     <string name="app_start">Empezar</string>
     <string name="app_title">¡Bienvenido a Ruteate!</string>
     <string name="app_title_count">Cuántas direcciones querés visitar?</string>
+    <string name="app_title_button">Ingresar</string>
     <string name="app_description">¿Qué es Ruteate? <br></br> Ruteate es una aplicación que llegó para ayudarte a entregar tus paquetes de manera más eficiente. </string>
 </resources>

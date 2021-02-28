@@ -102,6 +102,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     }
 
     private fun setCenter() {
+        disabledWindow(true)
         binding.maps.apply {
             setTileSource(TileSourceFactory.MAPNIK)
             setMultiTouchControls(true)
@@ -123,6 +124,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
             override fun onLocationChanged(location: Location?) {
                 if (!myCurrentPosition)
                     location?.let {
+                        disabledWindow(false)
                         myCurrentPosition = true
                         model.setMyLocation(GeoPoint(it.latitude, it.longitude))
                         println("ONLOCATIONCHANGED")

@@ -5,20 +5,16 @@ import org.osmdroid.util.GeoPoint
 import kotlin.random.Random
 
 class PopulationManager(private val count: Int) {
-    private val matrix: Array<Array<Model>>
+    private val matrix: Array<Array<Model>> = Array(count) {
+        Array(count) {
+            Model(0.0)
+        }
+    }
     private val arrayDistanceOrigin = arrayListOf<GoAndGoBackDistance>()
     private lateinit var myLocation: GeoPoint
     val entries = mutableListOf<GeoPoint>()
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
-
-    init {
-        matrix = Array(count) {
-            Array(count) {
-                Model(0.0)
-            }
-        }
-    }
 
     fun setMyLocation(location: GeoPoint) {
         myLocation = location

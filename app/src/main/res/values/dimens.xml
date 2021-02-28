@@ -7,6 +7,9 @@
     <dimen name="ui_4m">32dp</dimen>
     <dimen name="ui_5m">40dp</dimen>
     <dimen name="ui_6m">48dp</dimen>
-    <dimen name="font_ui_3m">24sp</dimen>
+    <dimen name="ui_8m">64dp</dimen>
+    <dimen name="font_ui_1m">8sp</dimen>
+    <dimen name="font_ui_1_5m">12sp</dimen>
     <dimen name="font_ui_2m">16sp</dimen>
+    <dimen name="font_ui_3m">24sp</dimen>
 </resources>
