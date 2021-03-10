@@ -269,11 +269,15 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         }
         bestRoute.forEachIndexed { index, geoPoint ->
             if (index != 0 && index != bestRoute.size - 1) {
-                val name = "@drawable/ic_number_$index"
+                val name = "@drawable/ic_number_${index-1}"
                 val drawable = resources.getIdentifier(name, null, packageName)
                 val marker = Marker(binding.maps)
                 marker.position = geoPoint
-                marker.icon = resources.getDrawable(drawable, null)
+                if (drawable > 0) {
+                    marker.icon = resources.getDrawable(drawable, null)
+                } else {
+                    marker.icon = resources.getDrawable(R.drawable.marker_default, null)
+                }
                 marker.title = "$LABEL_ARRIVED_POINT $index"
                 binding.maps.apply {
                     overlays.add(marker)
@@ -296,6 +300,10 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                     nodeMarker.icon = resources.getDrawable(R.drawable.ic_start, null)
                     nodeMarker.image = resources.getDrawable(R.drawable.ic_start, null)
                 }
+                /*road.mNodes.size - 2 -> {
+                    nodeMarker.icon = resources.getDrawable(R.drawable.ic_finish, null)
+                    nodeMarker.image = resources.getDrawable(R.drawable.ic_finish, null)
+                }*/
                 else -> {
                     nodeMarker.icon = resources.getDrawable(R.drawable.ic_middle_marker, null)
                     nodeMarker.image = resources.getDrawable(R.drawable.ic_middle_marker, null)

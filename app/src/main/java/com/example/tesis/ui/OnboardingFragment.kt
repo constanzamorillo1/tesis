@@ -40,8 +40,10 @@ class OnboardingFragment : Fragment() {
             image.setImageDrawable(AppCompatResources.getDrawable(requireContext(), imageInt))
             if (visible) {
                 startButton.visibility = View.VISIBLE
+                licenseOSM.visibility = View.INVISIBLE
             } else {
                 startButton.visibility = View.INVISIBLE
+                licenseOSM.visibility = View.VISIBLE
             }
             startButton.setOnClickListener {
                 startActivity(Intent(context, CountInputActivity::class.java))

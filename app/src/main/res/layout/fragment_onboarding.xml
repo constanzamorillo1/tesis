@@ -39,7 +39,6 @@
             android:id="@+id/startButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/ui_3m"
             android:layout_marginBottom="@dimen/ui_4m"
             android:visibility="invisible"
             android:background="@drawable/drawable_button"
@@ -48,6 +47,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:text="@string/app_start"/>
+
+        <TextView
+            android:id="@+id/licenseOSM"
+            android:layout_width="@dimen/ui_0m"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/ui_4m"
+            android:layout_marginEnd="@dimen/ui_4m"
+            android:layout_marginBottom="@dimen/ui_4m"
+            android:text="@string/app_thanks_osm"
+            android:textSize="@dimen/font_ui_2m"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
