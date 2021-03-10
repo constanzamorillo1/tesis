@@ -12,7 +12,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:queryHint="Ingrese Dirección"
+        android:queryHint="@string/app_enter_address"
         android:iconifiedByDefault="false"
         android:layout_height="wrap_content"/>
 

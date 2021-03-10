@@ -51,6 +51,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         private const val LABEL_ARRIVED_POINT = "Punto de llegada"
         private const val STEP = "PASO"
         private const val COLOR_ROUTE = "#FFD6614E"
+        private const val TEXT_ADDRESS_ERROR = "No se puede encontrar la dirección"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,10 +92,14 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                 is State.Success -> {
                     if (response.response.isNotEmpty()) {
                         val point = response.response.first()
-                        longPressHelper(GeoPoint(point.latLng.lat, point.latLng.lng))
-                        binding.searchView.run {
-                            setQuery(RESET_STRING, false)
-                            clearFocus()
+                        if (point.adminArea5.isNotEmpty()) {
+                            longPressHelper(GeoPoint(point.latLng.lat, point.latLng.lng))
+                            binding.searchView.run {
+                                setQuery(RESET_STRING, false)
+                                clearFocus()
+                            }
+                        } else {
+                            Toast.makeText(applicationContext, TEXT_ADDRESS_ERROR, Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

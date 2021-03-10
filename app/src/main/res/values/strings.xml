@@ -9,4 +9,5 @@
     <string name="app_title_button">Ingresar</string>
     <string name="app_description">¿Qué es Ruteate? <br></br> Ruteate es una aplicación que llegó para ayudarte a entregar tus paquetes de manera más eficiente. </string>
     <string name="app_description_second">Podes selección la dirección donde queres ir <br></br> o bien ingresarla a mano! :) </string>
+    <string name="app_enter_address">Ingrese Dirección y Localidad </string>
 </resources>
