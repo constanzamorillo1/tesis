@@ -9,6 +9,10 @@ class GeneticAlgorithm(
     private lateinit var population: MutableList<Individual>
     private val routeSize = populationManager.entries.size
 
+    companion object {
+        private const val TOP_ITERACIONES = 50
+    }
+
     fun executeOX(): Individual {
         val pxs = getPXS(routeSize)
         population = populationManager.createPopulation()
@@ -17,7 +21,7 @@ class GeneticAlgorithm(
         println(firstParent.toString())
         println(secondParent.toString())
         var i = 0
-        while (i < 50 && population.size > 0) {
+        while (i < TOP_ITERACIONES && population.size > 0) {
             val (parent1, parent2) = selection()
             val (offStringOX1, offStringOX2) = crossoverOX(firstParent, secondParent, pxs.first, pxs.second)
             mutation(offStringOX1)

@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getPagerFragments(): List<Fragment> = mutableListOf<Fragment>().apply {
         add(OnboardingFragment.newInstance(getString(R.string.app_description), R.mipmap.ic_onboarding_1))
-        add(OnboardingFragment.newInstance(getString(R.string.app_description), R.mipmap.ic_onboarding_2, true))
+        add(OnboardingFragment.newInstance(getString(R.string.app_description_second), R.mipmap.ic_onboarding_2, true))
     }
 
     companion object {

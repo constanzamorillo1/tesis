@@ -50,6 +50,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         private const val RESET_STRING = ""
         private const val LABEL_ARRIVED_POINT = "Punto de llegada"
         private const val STEP = "PASO"
+        private const val COLOR_ROUTE = "#FFD6614E"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -280,7 +281,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     private fun calculateRoute(bestRoute: ArrayList<GeoPoint>) {
         putMarketWithNumber(bestRoute)
         val road = RoadManagerObject.getRoadManager().getRoad(bestRoute)
-        val polyline = RoadManager.buildRoadOverlay(road, Color.parseColor("#FFD6614E"), WIDTH)
+        val polyline = RoadManager.buildRoadOverlay(road, Color.parseColor(COLOR_ROUTE), WIDTH)
         binding.maps.overlays.add(polyline)
         road.mNodes.forEachIndexed { index, it ->
             val nodeMarker = Marker(binding.maps)
@@ -289,10 +290,6 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                 0 -> {
                     nodeMarker.icon = resources.getDrawable(R.drawable.ic_start, null)
                     nodeMarker.image = resources.getDrawable(R.drawable.ic_start, null)
-                }
-                road.mNodes.size - 1 -> {
-                    nodeMarker.icon = resources.getDrawable(R.drawable.ic_finish, null)
-                    nodeMarker.image = resources.getDrawable(R.drawable.ic_finish, null)
                 }
                 else -> {
                     nodeMarker.icon = resources.getDrawable(R.drawable.ic_middle_marker, null)

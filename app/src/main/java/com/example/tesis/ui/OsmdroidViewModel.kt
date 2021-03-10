@@ -57,6 +57,7 @@ class OsmdroidViewModel(count: Int): ViewModel() {
                 bestRoute.add(populationManager.entries[address])
             }
         }
+        bestRoute.add(bestRoute.first())
         Log.d("time","total time is: $time milisegundos")
         return bestRoute
     }
