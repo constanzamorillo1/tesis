@@ -15,6 +15,8 @@
         android:layout_marginEnd="@dimen/ui_3m"
         android:gravity="center_horizontal"
         android:text="@string/app_title_count"
+        android:textSize="@dimen/font_ui_2m"
+        android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
