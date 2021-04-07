@@ -42,7 +42,7 @@
         android:layout_marginTop="@dimen/ui_1m"
         android:layout_marginStart="@dimen/ui_6m"
         android:layout_marginEnd="@dimen/ui_6m"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:gravity="center_horizontal"
         android:textColor="@color/colorRed"
         android:text="@string/app_error_count"
@@ -59,7 +59,7 @@
         android:enabled="false"
         android:background="@drawable/drawable_button"
         android:textColor="@color/colorWhite"
-        app:layout_goneMarginTop="@dimen/ui_3m"
+        android:layout_marginTop="@dimen/ui_2m"
         app:layout_constraintTop_toBottomOf="@+id/errorText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
