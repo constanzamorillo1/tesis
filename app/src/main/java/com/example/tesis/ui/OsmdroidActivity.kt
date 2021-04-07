@@ -300,10 +300,6 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                     nodeMarker.icon = resources.getDrawable(R.drawable.ic_start, null)
                     nodeMarker.image = resources.getDrawable(R.drawable.ic_start, null)
                 }
-                /*road.mNodes.size - 2 -> {
-                    nodeMarker.icon = resources.getDrawable(R.drawable.ic_finish, null)
-                    nodeMarker.image = resources.getDrawable(R.drawable.ic_finish, null)
-                }*/
                 else -> {
                     nodeMarker.icon = resources.getDrawable(R.drawable.ic_middle_marker, null)
                     nodeMarker.image = resources.getDrawable(R.drawable.ic_middle_marker, null)

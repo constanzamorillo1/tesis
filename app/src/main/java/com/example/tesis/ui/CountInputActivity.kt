@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.example.tesis.databinding.ActivityCountInputBinding
 
 class CountInputActivity : AppCompatActivity() {
@@ -32,7 +33,9 @@ class CountInputActivity : AppCompatActivity() {
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     // nothing
-                    enterButton.isEnabled = count > 0
+                    val input = s.toString().toInt()
+                    errorText.isVisible = input > 10
+                    enterButton.isEnabled = input in 1..10
                 }
 
                 override fun afterTextChanged(s: Editable?) {

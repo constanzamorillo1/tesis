@@ -6,9 +6,10 @@
     <string name="app_start">Empezar</string>
     <string name="app_title">¡Bienvenido a Ruteate!</string>
     <string name="app_title_count">¿Cuántas direcciones querés visitar?</string>
+    <string name="app_error_count">No superar las 10 direcciones</string>
     <string name="app_title_button">Ingresar</string>
-    <string name="app_description">¿Qué es Ruteate? <br></br> Ruteate es una aplicación que llegó para ayudarte a entregar tus paquetes de manera más eficiente. </string>
-    <string name="app_description_second">Podes selección la dirección donde queres ir <br></br> o bien ingresarla a mano! :) </string>
+    <string name="app_description">¿Qué es Ruteate? <br /> Ruteate es una aplicación que llegó para ayudarte a entregar tus paquetes de manera más eficiente. </string>
+    <string name="app_description_second">Podes seleccionar la dirección donde queres ir <br /> o bien ingresarla a mano! :) </string>
     <string name="app_enter_address">Ingrese Dirección y Localidad </string>
     <string name="app_thanks_osm">Mis agradecimientos a OpenStreetMap ® :)</string>
 </resources>
