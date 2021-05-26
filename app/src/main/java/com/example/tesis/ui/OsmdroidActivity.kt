@@ -90,7 +90,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                     binding.viewProgress.visibility = View.INVISIBLE
                 }
                 is State.Success -> {
-                    if (response.response.isNotEmpty()) {
+                    /*if (response.response.isNotEmpty()) {
                         val point = response.response.first()
                         if (point.adminArea5.isNotEmpty()) {
                             longPressHelper(GeoPoint(point.latLng.lat, point.latLng.lng))
@@ -101,7 +101,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                         } else {
                             Toast.makeText(applicationContext, TEXT_ADDRESS_ERROR, Toast.LENGTH_SHORT).show()
                         }
-                    }
+                    }*/
                 }
             }
         })
@@ -172,7 +172,10 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         binding.reset.setOnClickListener {
           resetMap()
         }
-        binding.searchView.run {
+        binding.putPointButton.setOnClickListener {
+            putMarket(GeoPoint(binding.latitudEdit.text.toString().toDouble(), binding.longitudEdit.text.toString().toDouble()))
+        }
+        /*binding.searchView.run {
             this.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     query?.let {
@@ -186,7 +189,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                     return false
                 }
             })
-        }
+        }*/
     }
 
 

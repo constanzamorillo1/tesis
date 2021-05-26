@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.OsmdroidActivity">
 
-    <SearchView
+    <!--<SearchView
         android:id="@+id/searchView"
         android:layout_width="@dimen/ui_0m"
         app:layout_constraintTop_toTopOf="parent"
@@ -14,13 +14,42 @@
         app:layout_constraintStart_toStartOf="parent"
         android:queryHint="@string/app_enter_address"
         android:iconifiedByDefault="false"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"/>-->
+
+    <EditText
+        android:id="@+id/latitudEdit"
+        android:layout_width="@dimen/ui_0m"
+        android:layout_height="wrap_content"
+        android:text="Latitud"
+        app:layout_constraintEnd_toStartOf="@id/longitudEdit"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <EditText
+        android:id="@+id/longitudEdit"
+        android:layout_width="@dimen/ui_0m"
+        android:layout_height="wrap_content"
+        android:text="Longitud"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/latitudEdit"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/putPointButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/ui_1m"
+        android:text="Ingresar punto"
+        app:layout_constraintTop_toBottomOf="@id/latitudEdit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <org.osmdroid.views.MapView
         android:id="@+id/maps"
         android:layout_width="match_parent"
         android:layout_height="@dimen/ui_0m"
-        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        android:layout_marginTop="@dimen/ui_1m"
+        app:layout_constraintTop_toBottomOf="@+id/putPointButton"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="@dimen/ui_8m"
         tools:layout_editor_absoluteX="0dp"
