@@ -1,4 +1,4 @@
-package com.example.tesis.core
+package com.example.tesis.domain
 
 import kotlin.random.Random
 

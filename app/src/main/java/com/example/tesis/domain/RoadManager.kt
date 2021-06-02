@@ -1,4 +1,4 @@
-package com.example.tesis.core
+package com.example.tesis.domain
 
 import android.os.StrictMode
 import com.example.tesis.domain.AbstractRepository.Companion.KEY

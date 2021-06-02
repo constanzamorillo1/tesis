@@ -18,7 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.tesis.R
-import com.example.tesis.core.RoadManagerObject
+import com.example.tesis.domain.RoadManagerObject
 import com.example.tesis.databinding.ActivityOsmdroidBinding
 import kotlinx.coroutines.*
 import org.osmdroid.bonuspack.routing.Road

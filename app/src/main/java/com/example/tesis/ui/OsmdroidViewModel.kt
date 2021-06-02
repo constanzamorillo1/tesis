@@ -4,11 +4,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.tesis.core.Address
-import com.example.tesis.core.GeneticAlgorithm
-import com.example.tesis.core.Location
-import com.example.tesis.core.PopulationManager
-import com.example.tesis.domain.OpenStreetMapRepository
+import com.example.tesis.domain.GeneticAlgorithm
+import com.example.tesis.domain.Location
+import com.example.tesis.domain.PopulationManager
+import com.example.tesis.data.OpenStreetMapRepository
 import com.example.tesis.domain.RepositoryResult
 import org.osmdroid.util.GeoPoint
 import kotlin.system.measureTimeMillis

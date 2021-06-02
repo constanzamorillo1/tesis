@@ -1,4 +1,4 @@
-package com.example.tesis.core
+package com.example.tesis.domain
 
 data class Address (
     val lat: Double,
