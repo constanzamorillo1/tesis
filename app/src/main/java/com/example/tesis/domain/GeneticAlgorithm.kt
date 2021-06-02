@@ -10,7 +10,7 @@ class GeneticAlgorithm(
     private val routeSize = populationManager.entries.size
 
     companion object {
-        private const val TOP_ITERACIONES = 50
+        private const val TOP_ITERACIONES = 100
     }
 
     fun executeOX(): Individual {
