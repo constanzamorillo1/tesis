@@ -173,7 +173,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
           resetMap()
         }
         binding.putPointButton.setOnClickListener {
-            putMarket(GeoPoint(binding.latitudEdit.text.toString().toDouble(), binding.longitudEdit.text.toString().toDouble()))
+            longPressHelper(GeoPoint(binding.latitudEdit.text.toString().toDouble(), binding.longitudEdit.text.toString().toDouble()))
         }
         /*binding.searchView.run {
             this.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
