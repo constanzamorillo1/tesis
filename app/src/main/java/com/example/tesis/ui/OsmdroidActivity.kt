@@ -23,6 +23,7 @@ import com.example.tesis.databinding.ActivityOsmdroidBinding
 import kotlinx.coroutines.*
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
+import org.osmdroid.bonuspack.routing.RoadNode
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -213,7 +214,9 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     }
 
     private fun resetMap() {
-        model.resetPopulation()
+        setListenerNavigation()
+
+        /*model.resetPopulation()
         addresses = 0
         myCurrentPosition = false
         binding.run {
@@ -226,7 +229,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
             }
             calculate.isEnabled = false
             setCenter()
-        }
+        }*/
     }
 
     override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
@@ -314,5 +317,38 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         }
         Log.d("time road", road.mDuration.toString())
         binding.maps.invalidate()
+    }
+
+    private fun setListenerNavigation() {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationListener = object: LocationListener {
+            override fun onLocationChanged(location: Location?) {
+                location?.let {
+                    val mLocationOverlay = MyLocationNewOverlay(
+                        GpsMyLocationProvider(applicationContext), binding.maps)
+                    mLocationOverlay.enableMyLocation()
+                    mLocationOverlay.enableFollowLocation()
+                    binding.maps.overlays.add(mLocationOverlay)
+
+                    /**
+                     * Si paso por todos los puntos que tenia que pasar y esta en la incial, etnonces cortar el locationManager
+                     */
+                }
+            }
+
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+                //NOTHING HERE
+            }
+
+            override fun onProviderEnabled(provider: String?) {
+                //NOTHING HERE
+            }
+
+            override fun onProviderDisabled(provider: String?) {
+                //NOTHING HERE
+            }
+        }
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0F, locationListener)
     }
 }
