@@ -1,10 +1,11 @@
 package com.example.tesis.domain
 
+import android.content.Context
 import kotlinx.coroutines.*
 import org.osmdroid.util.GeoPoint
 import kotlin.random.Random
 
-class PopulationManager(private val count: Int) {
+class PopulationManager(private val count: Int, private val context: Context) {
     private val matrix: Array<Array<Model>> = Array(count) {
         Array(count) {
             Model(0.0)
@@ -97,10 +98,10 @@ class PopulationManager(private val count: Int) {
     }
 
     private fun calculateDistanceOrigin(point: GeoPoint) {
-        val distanceGo = RoadManagerObject.getRoadManager()
+        val distanceGo = RoadManagerObject.getRoadManager(context)
             .getRoad(arrayListOf(myLocation, point))
             .mLength
-        val distanceGoBack = RoadManagerObject.getRoadManager()
+        val distanceGoBack = RoadManagerObject.getRoadManager(context)
             .getRoad(arrayListOf(point, myLocation))
             .mLength
         arrayDistanceOrigin.add(GoAndGoBackDistance(distanceGo, distanceGoBack))
@@ -111,7 +112,7 @@ class PopulationManager(private val count: Int) {
             copy().forEachIndexed { indexDestination, geoPointDestination ->
                 if (indexOrigin != indexDestination) {
                     if (!matrix[indexOrigin][indexDestination].inicialize) {
-                        val distance = RoadManagerObject.getRoadManager()
+                        val distance = RoadManagerObject.getRoadManager(context)
                             .getRoad(arrayListOf(geoPointOrigin, geoPointDestination))
                             .mLength
                         matrix[indexOrigin][indexDestination] = Model(distance,true)

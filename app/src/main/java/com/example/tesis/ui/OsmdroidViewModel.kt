@@ -1,5 +1,6 @@
 package com.example.tesis.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,13 +9,13 @@ import com.example.tesis.domain.GeneticAlgorithm
 import com.example.tesis.domain.Location
 import com.example.tesis.domain.PopulationManager
 import com.example.tesis.data.OpenStreetMapRepository
-import com.example.tesis.domain.RepositoryResult
+import com.example.tesis.data.RepositoryResult
 import org.osmdroid.util.GeoPoint
 import kotlin.system.measureTimeMillis
 
-class OsmdroidViewModel(count: Int): ViewModel() {
+class OsmdroidViewModel(count: Int, context: Context): ViewModel() {
 
-    private var populationManager = PopulationManager(count)
+    private var populationManager = PopulationManager(count, context)
     private val bestRoute = arrayListOf<GeoPoint>()
     private val repository = OpenStreetMapRepository()
     private var pointMutableLiveData = MutableLiveData<State>()

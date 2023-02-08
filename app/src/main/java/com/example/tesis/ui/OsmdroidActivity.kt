@@ -59,7 +59,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         binding = ActivityOsmdroidBinding.inflate(layoutInflater)
         setContentView(binding.root)
         intent.extras?.getInt(COUNT)?.let {
-            model = OsmdroidViewModel(it)
+            model = OsmdroidViewModel(it, applicationContext)
             count = it
         }
         initOSMaps()
@@ -81,8 +81,8 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     }
 
     private fun setObservers() {
-        model.point.observe(this@OsmdroidActivity,{ response ->
-            when(response) {
+        model.point.observe(this@OsmdroidActivity) { response ->
+            when (response) {
                 is State.ShowLoading -> {
                     binding.viewProgress.visibility = View.VISIBLE
                 }
@@ -99,12 +99,16 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                                 clearFocus()
                             }
                         } else {
-                            Toast.makeText(applicationContext, TEXT_ADDRESS_ERROR, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                applicationContext,
+                                TEXT_ADDRESS_ERROR,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
             }
-        })
+        }
     }
 
     private fun setCenter() {
@@ -289,7 +293,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
     private fun calculateRoute(bestRoute: ArrayList<GeoPoint>) {
         putMarketWithNumber(bestRoute)
-        val road = RoadManagerObject.getRoadManager().getRoad(bestRoute)
+        val road = RoadManagerObject.getRoadManager(applicationContext).getRoad(bestRoute)
         val polyline = RoadManager.buildRoadOverlay(road, Color.parseColor(COLOR_ROUTE), WIDTH)
         binding.maps.overlays.add(polyline)
         road.mNodes.forEachIndexed { index, it ->

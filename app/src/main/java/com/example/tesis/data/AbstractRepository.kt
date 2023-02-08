@@ -1,4 +1,4 @@
-package com.example.tesis.domain
+package com.example.tesis.data
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -12,7 +12,7 @@ abstract class AbstractRepository<T> (service: Class<T>) {
         .create(service)
 
     companion object {
-        private const val BASE_URL = "http://open.mapquestapi.com/"
+        private const val BASE_URL = "http://www.mapquestapi.com/"
         const val KEY = "A3qGuyvHi1WfLxj1KKh51zxDspxAfOAq"
     }
 }

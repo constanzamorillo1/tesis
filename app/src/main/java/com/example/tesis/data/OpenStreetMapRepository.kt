@@ -1,8 +1,6 @@
 package com.example.tesis.data
 
 import com.example.tesis.domain.AddressResponse
-import com.example.tesis.domain.AbstractRepository
-import com.example.tesis.domain.RepositoryResult
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
