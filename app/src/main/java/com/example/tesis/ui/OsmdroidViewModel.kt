@@ -5,11 +5,14 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.tesis.domain.GeneticAlgorithm
 import com.example.tesis.domain.Location
 import com.example.tesis.domain.PopulationManager
-import com.example.tesis.data.OpenStreetMapRepository
-import com.example.tesis.data.RepositoryResult
+import com.example.tesis.data.repository.OpenStreetMapRepository
+import com.example.tesis.utils.Response
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.osmdroid.util.GeoPoint
 import kotlin.system.measureTimeMillis
 
@@ -18,9 +21,9 @@ class OsmdroidViewModel(count: Int, context: Context): ViewModel() {
     private var populationManager = PopulationManager(count, context)
     private val bestRoute = arrayListOf<GeoPoint>()
     private val repository = OpenStreetMapRepository()
-    private var pointMutableLiveData = MutableLiveData<State>()
+    private var pointMutableLiveData = MutableLiveData<Response<List<Location>>>()
 
-    val point: LiveData<State>
+    val point: LiveData<Response<List<Location>>>
         get() = pointMutableLiveData
 
     fun resetPopulation() {
@@ -38,14 +41,13 @@ class OsmdroidViewModel(count: Int, context: Context): ViewModel() {
     }
 
     fun getPoints(address: String){
-        pointMutableLiveData.postValue(State.ShowLoading)
-        repository.getAddressPoint(address) {
-            Log.d("results", it.toString())
-            if (it is RepositoryResult.Success) {
-               pointMutableLiveData.value = State.Success(it.value.results[0].locations)
+        repository.getAddressPoint(address).onEach {
+            if (it is Response.Success) {
+                pointMutableLiveData.value = Response.Success(it.value)
+            } else {
+                pointMutableLiveData.value = it
             }
-            pointMutableLiveData.postValue(State.HideLoading)
-        }
+        }.launchIn(viewModelScope)
     }
 
     fun getBestRoute(): ArrayList<GeoPoint> {
@@ -61,10 +63,4 @@ class OsmdroidViewModel(count: Int, context: Context): ViewModel() {
         Log.d("time","total time is: $time milisegundos")
         return bestRoute
     }
-}
-
-sealed class State {
-    object HideLoading : State()
-    object ShowLoading : State()
-    class Success(val response: List<Location>): State()
 }

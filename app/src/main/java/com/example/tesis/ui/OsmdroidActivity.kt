@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import com.example.tesis.R
 import com.example.tesis.domain.RoadManagerObject
 import com.example.tesis.databinding.ActivityOsmdroidBinding
+import com.example.tesis.utils.Response
 import kotlinx.coroutines.*
 import org.osmdroid.bonuspack.routing.Road
 import org.osmdroid.bonuspack.routing.RoadManager
@@ -52,6 +53,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         private const val STEP = "PASO"
         private const val COLOR_ROUTE = "#FFD6614E"
         private const val TEXT_ADDRESS_ERROR = "No se puede encontrar la dirección"
+        private const val TEXT_ERROR = "Por favor verificar internet"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,15 +85,14 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
     private fun setObservers() {
         model.point.observe(this@OsmdroidActivity) { response ->
             when (response) {
-                is State.ShowLoading -> {
+                is Response.Loading -> {
                     binding.viewProgress.visibility = View.VISIBLE
                 }
-                is State.HideLoading -> {
+                is Response.Success -> {
                     binding.viewProgress.visibility = View.INVISIBLE
-                }
-                is State.Success -> {
-                    if (response.response.isNotEmpty()) {
-                        val point = response.response.first()
+                    val list = response.value
+                    if (list.isNotEmpty()) {
+                        val point = list.first()
                         if (point.adminArea5.isNotEmpty()) {
                             longPressHelper(GeoPoint(point.latLng.lat, point.latLng.lng))
                             binding.searchView.run {
@@ -106,6 +107,13 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                             ).show()
                         }
                     }
+                }
+                else -> {
+                    Toast.makeText(
+                        applicationContext,
+                        TEXT_ERROR,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -141,6 +149,7 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
                     println(it.longitude)
                 }
         }
+
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 100F, locationListener)
     }
