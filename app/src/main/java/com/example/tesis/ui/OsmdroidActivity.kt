@@ -130,30 +130,16 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
 
     private fun setListenerMyLocation() {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val locationListener = object: LocationListener {
-            override fun onLocationChanged(location: Location?) {
-                if (!myCurrentPosition)
-                    location?.let {
-                        disabledWindow(false)
-                        myCurrentPosition = true
-                        model.setMyLocation(GeoPoint(it.latitude, it.longitude))
-                        println("ONLOCATIONCHANGED")
-                        println(it.latitude)
-                        println(it.longitude)
-                    }
-            }
-
-            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-                //NOTHING HERE
-            }
-
-            override fun onProviderEnabled(provider: String?) {
-                //NOTHING HERE
-            }
-
-            override fun onProviderDisabled(provider: String?) {
-                //NOTHING HERE
-            }
+        val locationListener = LocationListener { location ->
+            if (!myCurrentPosition)
+                location.let {
+                    disabledWindow(false)
+                    myCurrentPosition = true
+                    model.setMyLocation(GeoPoint(it.latitude, it.longitude))
+                    println("ONLOCATIONCHANGED")
+                    println(it.latitude)
+                    println(it.longitude)
+                }
         }
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 100F, locationListener)
