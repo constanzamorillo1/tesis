@@ -316,5 +316,8 @@ class OsmdroidActivity : AppCompatActivity(), MapEventsReceiver {
         }
         Log.d("time road", road.mDuration.toString())
         binding.maps.invalidate()
+
+        val modalBottomSheet = ModalBottomSheet.newInstance((road.mDuration/60).toInt().toString(), road.mLength.toInt().toString())
+        modalBottomSheet.show(supportFragmentManager, "modalBottomSheet")
     }
 }
